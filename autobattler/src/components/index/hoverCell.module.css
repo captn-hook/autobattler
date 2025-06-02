@@ -1,0 +1,7 @@
+.hoverCell {
+    position: relative; /* Ensure the sub-table is positioned relative to the parent */
+}
+
+.subTable {
+    pointer-events: none; /* Prevent interaction with the sub-table */
+}
