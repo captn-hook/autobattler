@@ -8,9 +8,9 @@ import { useSelection } from '@/context/selection/selectionContext';
 import { useResult } from '@/context/result/resultContext';
 
 export default function Nav() {
-    const { user, login, logout } = useUser();
+    const { user, login, logout, addFavorite } = useUser();
     const { selection } = useSelection();
-    const { setResult } = useResult();
+    const { result, setResult } = useResult();
 
     return (
         <AppBar position="static">
@@ -95,16 +95,17 @@ export default function Nav() {
                                     })
                                         .then((response) => {
                                             if (!response.ok) {
-                                                throw new Error('Network response was not ok');
+                                                console.warn('Failed to fuse monsters:', response.statusText);
+                                                return response.json();
                                             }
                                             return response.json();
                                         })
                                         .then((data) => {
-                                            // Handle fusion result
-                                            setResult(data);
-                                        })
-                                        .catch((error) => {
-                                            console.error('Error:', error);
+                                            setResult(data).then((r) => {
+                                                if (r && r.id) {
+                                                    addFavorite?.(r.id);
+                                                }
+                                            });
                                         });
                                 }}>
                                 X

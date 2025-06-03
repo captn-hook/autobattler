@@ -6,6 +6,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { UserProvider } from "@/context/user/userContext";
 import { SelectionProvider } from "@/context/selection/selectionContext";
 import { ResultProvider } from "@/context/result/resultContext";
+import ResultPopup from "@/components/result/restultPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
             <SelectionProvider>
               <ResultProvider>
                 <Nav />
+                <ResultPopup />
                 {children}
               </ResultProvider>
             </SelectionProvider>

@@ -9,7 +9,7 @@ import MonsterCard from '@/components/card/monsterCard';
 export default function Inventory() {
     const [data, setData] = useState<Monster[]>([]);
     const { result } = useResult();
-    const { user } = useUser();
+    const { user, getFavorites } = useUser();
     
     useEffect(() => {
         // Fetch /api/monsters?filter=uuid
@@ -19,12 +19,17 @@ export default function Inventory() {
                 return;
             }
             try {
-                const response = await fetch('/api/monsters?filter=' + user?.id);
-                if (!response.ok) {
-                    console.warn('Failed to fetch monsters:', response.statusText);
-                    return;
+                const response = await getFavorites();
+                var monsters: Monster[] = [];
+                for (const monsterId of response) {
+                    const monsterResponse = await fetch(`/api/monsters/${monsterId}`);
+                    if (!monsterResponse.ok) {
+                        console.warn('Failed to fetch monster:', monsterResponse.statusText);
+                        continue;
+                    }
+                    const monster = await monsterResponse.json();
+                    monsters.push(monster);
                 }
-                const monsters = await response.json();
                 setData(monsters);
             } catch (error) {
                 console.error('Error fetching monsters:', error);

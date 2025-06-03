@@ -1,21 +1,84 @@
 from pydantic import BaseModel, Field
-from typing import Literal
 from flask import Flask, jsonify, request
+from enum import Enum
 from outlines import models, generate
-import os
-from openai import OpenAI
+# import os
+# from openai import OpenAI
 import base64
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
-api_key = os.getenv("KEY")
-print("API Key:", api_key)
+# api_key = os.getenv("KEY")
+# print("API Key:", api_key)
 
-client = OpenAI(
-    api_key=api_key
-)
+# client = OpenAI(
+#     api_key=api_key
+# )
 
+class AbilityEnum(str, Enum):
+    FIRE = "FIRE"
+    WATER = "WATER"
+    EARTH = "EARTH"
+    AIR = "AIR"
+    MAGIC = "MAGIC"
+    GHOST = "GHOST"
+    STEALTH = "STEALTH"
+    WRATH = "WRATH"
+    IMMORTAL = "IMMORTAL"
+    SHIELD = "SHIELD"
+    HEAL = "HEAL"
+    STUN = "STUN"
+    POISON = "POISON"
+    LUCK = "LUCK"
+    CHARM = "CHARM"
+    INVISIBILITY = "INVISIBILITY"
+    FROST = "FROST"
+    LIGHTNING = "LIGHTNING"
+    TELEPORT = "TELEPORT"
+    CURSE = "CURSE"
+    REGENERATE = "REGENERATE"
+    BERSERK = "BERSERK"
+    CLAIRVOYANCE = "CLAIRVOYANCE"
+    CAMOUFLAGE = "CAMOUFLAGE"
+    GRAVITY = "GRAVITY"
+    PSYCHIC = "PSYCHIC"
+    TIME_SHIFT = "TIME_SHIFT"
+    BLIND = "BLIND"
+    VENOM = "VENOM"
+    DRAIN = "DRAIN"
+    MIRROR = "MIRROR"
+    SUMMON = "SUMMON"
+    PLAGUE = "PLAGUE"
+    AURA = "AURA"
+    SACRIFICE = "SACRIFICE"
+    DIVINE = "DIVINE"
+    FROG = "FROG"
+    DOG = "DOG"
+    FLY = "FLY"
+    SHAPESHIFT = "SHAPESHIFT"
+    TELEKINESIS = "TELEKINESIS"
+    OMNIPOTENCE = "OMNIPOTENCE"
+    OMNIPRESENCE = "OMNIPRESENCE"
+    OMNISCIENCE = "OMNISCIENCE"
+    REBIRTH = "REBIRTH"
+    EARTHQUAKE = "EARTHQUAKE"
+    FLIGHT = "FLIGHT"
+    REGENERATION = "REGENERATION"
+    SHADOW = "SHADOW"
+    PRECISION = "PRECISION"
+    SONG = "SONG"
+    CHARGE = "CHARGE"
+    SPELLCAST = "SPELLCAST"
+    TRANSFORM = "TRANSFORM"
+    CRUSH = "CRUSH"
+    WISH = "WISH"
+    NECROMANCY = "NECROMANCY"
+    MULTI_ATTACK = "MULTI-ATTACK"
+
+class Ability(BaseModel):
+    ability: AbilityEnum
+    
 class Stats(BaseModel):
     health: int = Field(..., ge=1, le=100)
     defense: int = Field(..., ge=1, le=100)
@@ -30,20 +93,13 @@ class Stats(BaseModel):
     def __str__(self):
         return (f"Health: {self.health}, Defense: {self.defense}, Strength: {self.strength}, "
                 f"Intelligence: {self.intelligence}, Speed: {self.speed}, Magic: {self.magic}, "
-                f"Stealth: {self.stealth}, Luck: {self.luck}, Charm: {self.charm}")
+                f"Stealth: {self.stealth}, Luck: {self.luck}, Charm: {self.charm}")    
 
 class Monster(BaseModel):
     name: str
     description: str
     stats: Stats
-    ability: Literal[
-        "FIRE", "WATER", "EARTH", "AIR", "MAGIC", "GHOST", "STEALTH", "WRATH", "IMMORTAL",
-        "SHIELD", "HEAL", "STUN", "POISON", "LUCK", "CHARM", "INVISIBILITY", "FROST", 
-        "LIGHTNING", "TELEPORT", "CURSE", "REGENERATE", "BERSERK", "CLAIRVOYANCE", 
-        "CAMOUFLAGE", "GRAVITY", "PSYCHIC", "TIME_SHIFT", "BLIND", "VENOM", "DRAIN", 
-        "MIRROR", "SUMMON", "PLAGUE", "AURA", "SACRIFICE", "DIVINE", "FROG", "DOG", 
-        "FLY", "SHAPESHIFT", "TELEKINESIS", "OMNIPOTENCE", "OMNIPRESENCE", "OMNISCIENCE"
-    ]
+    ability: str
 
     def __str__(self):
         return (f"Name: {self.name}, Description: {self.description}, "
@@ -103,48 +159,56 @@ def ollama(Class=Monster):
 
     return generate.json(model, Class)
 
-def generate_image(monster: Monster):
-    response = client.responses.create(
-        model="gpt-4.1-mini",
-        input="Generate sprite for my game, 28x28 pixels, of this monster: " + monster.description,
-        tools=[{"type": "image_generation"}],
-    )
+# def generate_image(monster: Monster):
+#     response = client.responses.create(
+#         model="gpt-4.1-mini",
+#         input="Generate sprite for my game, 28x28 pixels, of this monster: " + monster.description,
+#         tools=[{"type": "image_generation"}],
+#     )
 
-    # Save the image to a file
-    image_data = [
-        output.result
-        for output in response.output
-        if output.type == "image_generation_call"
-    ]
+#     # Save the image to a file
+#     image_data = [
+#         output.result
+#         for output in response.output
+#         if output.type == "image_generation_call"
+#     ]
         
-    if image_data:
-        image_base64 = image_data[0]
-        with open("temp.png", "wb") as f:
-            f.write(base64.b64decode(image_base64))
+#     if image_data:
+#         image_base64 = image_data[0]
+#         with open("temp.png", "wb") as f:
+#             f.write(base64.b64decode(image_base64))
             
 def monster_fusion(monster1: Monster, monster2: Monster) -> Monster:
     
-    abilities = [
-        "FIRE", "WATER", "EARTH", "AIR", "MAGIC", "GHOST", "STEALTH", "WRATH", "IMMORTAL",
-        "SHIELD", "HEAL", "STUN", "POISON", "LUCK", "CHARM", "INVISIBILITY", "FROST", 
-        "LIGHTNING", "TELEPORT", "CURSE", "REGENERATE", "BERSERK", "CLAIRVOYANCE", 
-        "CAMOUFLAGE", "GRAVITY", "PSYCHIC", "TIME_SHIFT", "BLIND", "VENOM", "DRAIN", 
-        "MIRROR", "SUMMON", "PLAGUE", "AURA", "SACRIFICE", "DIVINE", "FROG", "DOG", 
-        "FLY", "SHAPESHIFT", "TELEKINESIS", "OMNIPOTENCE", "OMNIPRESENCE", "OMNISCIENCE"
-    ]
+    abilities = list(AbilityEnum)
+    generator = ollama(Monster)
 
-    generator = ollama()
-
-    result = generator(
+    prompt1 = (
         "Generate a new species of monster that is a fusion of two existing monsters. "
         f"Monster 1: {monster1}\n"
         f"Monster 2: {monster2}\n\n"
         "The new monster should have a fitting name and statistics creatively combining the attributes of both monsters.\n"
         "It's description should reflect it's character and unique features, without directly mentioning it's parents.\n"
+        "Keep it concise and creative.\n\n"
         "And it's special ability should be one of the following that makes the most sense for the new monster: "
         ", ".join(ability for ability in abilities if isinstance(ability, str)) + "\n\n"
     )
-    return result
+    
+    result1 = generator(prompt1)
+    
+    prompt2 = (
+        f'What ability fits this monster: {result1.name},\n'
+        f'{result1.description}\n'
+        'best? choose from the following:\n'
+        ', '.join(ability for ability in abilities if isinstance(ability, str))
+    )
+    
+    generator = ollama(Ability)
+    
+    result2 = generator(prompt2)
+    
+    result1.ability = result2.ability
+    return result1
 
 def battle_monster(monster1: Monster, monster2: Monster):
 
@@ -154,33 +218,43 @@ def battle_monster(monster1: Monster, monster2: Monster):
         "Generate a battle report between two monsters. Stats are between 1 and 100, with higher numbers indicating stronger attributes. Take the monsters' abilities into account along with their stats.\n"
         f"Monster 1: {monster1}\n"
         f"Monster 2: {monster2}\n\n"
-        "Describe the battle outcome, including any special abilities used and the final winner"
+        "Describe the battle outcome, including any special abilities used by the final winner"
     )
-    return result
+
+    if result.victor == monster1.name:
+        monster1.description = result.description + f"\n{monster1.name} wins the battle!"
+        return monster1
+    elif result.victor == monster2.name:
+        monster2.description = result.description + f"\n{monster2.name} wins the battle!"
+        return monster2
 
 def new_monster():
-    abilities = [
-        "FIRE", "WATER", "EARTH", "AIR", "MAGIC", "GHOST", "STEALTH", "WRATH", "IMMORTAL",
-        "SHIELD", "HEAL", "STUN", "POISON", "LUCK", "CHARM", "INVISIBILITY", "FROST", 
-        "LIGHTNING", "TELEPORT", "CURSE", "REGENERATE", "BERSERK", "CLAIRVOYANCE", 
-        "CAMOUFLAGE", "GRAVITY", "PSYCHIC", "TIME_SHIFT", "BLIND", "VENOM", "DRAIN", 
-        "MIRROR", "SUMMON", "PLAGUE", "AURA", "SACRIFICE", "DIVINE", "FROG", "DOG", 
-        "FLY", "SHAPESHIFT", "TELEKINESIS", "OMNIPOTENCE", "OMNIPRESENCE", "OMNISCIENCE"
-    ]
+
+    abilities = list(Ability)
     
-    prompt = [
+    prompt1 = (
         "Generate a new monster for my game, similiar to these: "
         f"{', '.join([str(m) for m in monsters])}\n"
-        "The new monster should have a unique name, description, and statistics. "
-        "It should also have a special ability from this list: "
-        ", ".join(ability for ability in abilities if isinstance(ability, str))
-    ]
+        "The new monster should have a unique name, description, and statistics. Be succinct and creative.\n"
+    )
     
     generator = ollama(Monster)
     
-    result = generator(prompt)
+    result1 = generator(prompt1)
     
-    return result
+    prompt2 = (
+        f'What ability fits this monster: {result1.name},\n'
+        f'{result1.description}\n'
+        'best? choose from the following:\n'
+        ', '.join(ability for ability in abilities if isinstance(ability, str))
+    )
+    
+    generator = ollama(Ability)
+    
+    result2 = generator(prompt2)
+    
+    result1.ability = result2.ability
+    return result1
 
 app = Flask(__name__)
 @app.route('/fusion', methods=['POST'])
@@ -193,6 +267,8 @@ def fusion():
     
     # If the new monster has empty fields, return a 500 error
     if new_monster.name == "" or new_monster.description == "" or not new_monster.stats:
+        print(new_monster)
+        print("Failed to generate a new monster with valid fields")
         return jsonify({"error": "Failed to generate a new monster"}), 500
     
     print("New Monster:\n", new_monster)
@@ -208,23 +284,23 @@ def battle():
     print("Battle Report:\n", report)
     return jsonify(report.model_dump())
 
-@app.route('/monster', methods=['GET'])
-def get_monster():
-    monster = new_monster()
-    print("Generated new monster:\n", monster)
-    return jsonify(monster.model_dump())
+# @app.route('/monster', methods=['GET'])
+# def get_monster():
+#     monster = new_monster()
+#     print("Generated new monster:\n", monster)
+#     return jsonify(monster.model_dump())
 
-@app.route('/image', methods=['POST'])
-def generate_monster_image():
-    data = request.json
-    monster = Monster(**data)
+# @app.route('/image', methods=['POST'])
+# def generate_monster_image():
+#     data = request.json
+#     monster = Monster(**data)
     
-    # return jsonify({"message": "Image generation not currently supported"})
+#     # return jsonify({"message": "Image generation not currently supported"})
     
-    generate_image(monster)
-    print("Image generated for monster:", monster.name)
-    # Return the path to the generated image
-    return jsonify({"image_path": "temp.png"})
+#     generate_image(monster)
+#     print("Image generated for monster:", monster.name)
+#     # Return the path to the generated image
+#     return jsonify({"image_path": "temp.png"})
 
 # Run the Flask app
 if __name__ == '__main__':

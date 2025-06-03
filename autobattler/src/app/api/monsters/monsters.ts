@@ -7,6 +7,7 @@ export async function fetchId(monsterId: number) {
     const monsterSnapshot = await getDoc(monsterDoc);
     if (monsterSnapshot.exists()) {
         const monsterData = monsterSnapshot.data();
+        console.log("Fetched monster:", monsterData);
         return monsterData as Monster;
     } else {
         throw new Error("Monster not found");

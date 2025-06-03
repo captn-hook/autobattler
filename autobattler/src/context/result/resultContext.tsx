@@ -2,32 +2,22 @@
 import { useContext, createContext, useState, useEffect, ReactNode } from 'react';
 import type { Monster } from '@/types/monster';
 
-interface Result {
-  result?: Monster | string;
-}
-
 interface ResultContextValue {
-  result: Result;
-  setResult: (result: Result) => void;
+  result: Monster | null;
+  setResult: (result: Monster) => Promise<Monster>;
 }
 
 const ResultContext = createContext<ResultContextValue | undefined>(undefined);
 
 export const ResultProvider = ({ children }: { children: ReactNode }) => {
-  const [result, setResult] = useState<Result>({});
 
-  useEffect(() => {
-    // Load initial result from localStorage if available
-    const savedResult = localStorage.getItem('result');
-    if (savedResult) {
-      setResult(JSON.parse(savedResult));
-    }
-  }, []);
+  const [result, setRes] = useState<Monster | null>(null);
 
-  useEffect(() => {
-    // Save result to localStorage whenever it changes
-    localStorage.setItem('result', JSON.stringify(result));
-  }, [result]);
+  async function setResult(monster: Monster) {
+    // When setResult is called, return the result of the battle between two monsters
+    setRes(monster);
+    return monster;
+  }
 
   return (
     <ResultContext.Provider value={{ result, setResult }}>

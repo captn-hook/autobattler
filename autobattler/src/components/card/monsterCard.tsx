@@ -5,15 +5,30 @@ import { useSelection } from '@/context/selection/selectionContext';
 import { Monster } from '@/types/monster';
 import { Stats } from '@/types/stats';
 
-export default function MonsterCard({ monster }: { monster: Monster }) {
+export default function MonsterCard({ monster, size = 'medium' }: { monster: Monster; size?: 'small' | 'medium' | 'large' }) {
     const { setMonster1, setMonster2 } = useSelection();
 
     if (monster.image === "") {
         monster.image = '/placeholder.png'; // Fallback image if none provided
     }
 
+    let sizeW;
+    switch (size) {
+        case 'small':
+            sizeW = 250;
+            break;
+        case 'medium':
+            sizeW = 300;
+            break;
+        case 'large':
+            sizeW = 400;
+            break;
+        default:
+            sizeW = 500; // Default to medium size
+    }
+
     return (
-        <Card sx={{ width: 180, margin: 0.5 }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
+        <Card sx={{ width: sizeW, margin: 0.5 }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
             <Box sx={{ display: 'flex', alignItems: 'center',    borderBottom: '1px solid var(--color-secondary)' }}>
                 <CardMedia
                     component="img"

@@ -1,7 +1,8 @@
 'use client';
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from '@/app/firebaseConfig'; 
+import { auth, firestore } from '@/app/firebaseConfig'; 
+import { doc, setDoc, getDoc } from "firebase/firestore";
 
 interface User {
   id: string;
@@ -14,6 +15,8 @@ interface UserContextValue {
   user: User | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  addFavorite: (monsterId: number) => void;
+  getFavorites: () => Promise<number[]>; 
 }
 
 const UserContext = createContext<UserContextValue | undefined>(undefined);
@@ -54,9 +57,48 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error signing out", error);
     }
   }
+  
+  async function addFavorite(monsterId: number) {
+    if (!user) {
+      console.error("User must be logged in to add favorites");
+      return;
+    }
+
+    const userDoc = doc(firestore, "users", user.id);
+    const userSnapshot = await getDoc(userDoc);
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      const favorites = userData.favorites || [];
+      if (!favorites.includes(monsterId)) {
+        favorites.push(monsterId);
+        await setDoc(userDoc, { favorites }, { merge: true });
+      }
+    } else {
+      // If the user document doesn't exist, create it with the favorite
+      await setDoc(userDoc, { favorites: [monsterId] });
+    }
+  }
+
+  async function getFavorites(): Promise<number[]> {
+    if (!user) {
+      console.error("User must be logged in to get favorites");
+      return [];
+    }
+
+    const userDoc = doc(firestore, "users", user.id);
+    const userSnapshot = await getDoc(userDoc);
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      return userData.favorites || [];
+    } else {
+      return [];
+    }
+  }
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, login, logout, addFavorite, getFavorites }}>
       {children}
     </UserContext.Provider>
   );
