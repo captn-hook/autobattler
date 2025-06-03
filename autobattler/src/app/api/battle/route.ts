@@ -4,6 +4,7 @@ import type { MonsterSimple } from '@/types/monster';
 const FLASK_BASE_URL = (process.env.FLASK_BASE_URL || "http://localhost:5000") + "/battle";
 
 export async function POST(req: Request) {
+    console.log("Received POST request to /api/battle => ", FLASK_BASE_URL);
     try {
         // Parse the request body
         const body = await req.json();
