@@ -1,0 +1,5 @@
+pydantic
+Flask
+outlines
+python-dotenv
+openai
