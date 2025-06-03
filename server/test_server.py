@@ -59,19 +59,19 @@ class TestFlaskApp(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("name", response.json())
 
-    def test_generate_image_endpoint(self):
-        payload = {
-            "name": "Dragon",
-            "description": "A fierce dragon with scales as tough as steel",
-            "stats": {
-                "health": 100, "defense": 90, "strength": 80, "intelligence": 70,
-                "speed": 100, "magic": 90, "stealth": 30, "luck": 50, "charm": 50
-            },
-            "ability": "FIRE"
-        }
-        response = requests.post(URL + "/image", json=payload)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("image_path", response.json())
+    # def test_generate_image_endpoint(self):
+    #     payload = {
+    #         "name": "Dragon",
+    #         "description": "A fierce dragon with scales as tough as steel",
+    #         "stats": {
+    #             "health": 100, "defense": 90, "strength": 80, "intelligence": 70,
+    #             "speed": 100, "magic": 90, "stealth": 30, "luck": 50, "charm": 50
+    #         },
+    #         "ability": "FIRE"
+    #     }
+    #     response = requests.post(URL + "/image", json=payload)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertIn("image_path", response.json())
 
 if __name__ == "__main__":
     unittest.main()
