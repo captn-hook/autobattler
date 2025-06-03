@@ -54,4 +54,12 @@ export  type Monster = {
     stats: Stats;
     ability: Ability;
     image: string;
+    createdAt: string;
+}
+
+export type MonsterSimple = {
+    name: string;
+    description: string;
+    stats: Stats;
+    ability: Ability;
 }

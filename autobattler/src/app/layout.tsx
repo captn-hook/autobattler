@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/nav/nav";
 import "./globals.css";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { UserProvider } from "@/context/user/userContext";
+import { SelectionProvider } from "@/context/selection/selectionContext";
+import { ResultProvider } from "@/context/result/resultContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,8 +31,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppRouterCacheProvider>
-          <Nav />
-          {children}
+          <UserProvider>
+            <SelectionProvider>
+              <ResultProvider>
+                <Nav />
+                {children}
+              </ResultProvider>
+            </SelectionProvider>
+          </UserProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

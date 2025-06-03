@@ -1,12 +1,19 @@
+'use client';
 import { Card, CardContent, Typography, CardMedia } from '@mui/material';
-import { List, ListItem, ListItemText, Box } from '@mui/material';
-
+import { List, ListItem, Box } from '@mui/material';
+import { useSelection } from '@/context/selection/selectionContext';
 import { Monster } from '@/types/monster';
 import { Stats } from '@/types/stats';
 
 export default function MonsterCard({ monster }: { monster: Monster }) {
+    const { setMonster1, setMonster2 } = useSelection();
+
+    if (monster.image === "") {
+        monster.image = '/placeholder.png'; // Fallback image if none provided
+    }
+
     return (
-        <Card sx={{ width: 180, margin: 0.5 }}>
+        <Card sx={{ width: 180, margin: 0.5 }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
             <Box sx={{ display: 'flex', alignItems: 'center',    borderBottom: '1px solid var(--color-secondary)' }}>
                 <CardMedia
                     component="img"
