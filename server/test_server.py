@@ -1,6 +1,8 @@
 import unittest
 import requests
 
+URL = "http://69.129.101.124:5000"
+
 class TestFlaskApp(unittest.TestCase):
     def test_fusion_endpoint(self):
         payload = {
@@ -23,7 +25,7 @@ class TestFlaskApp(unittest.TestCase):
                 "ability": "EARTH"
             }
         }
-        response = requests.post("http://127.0.0.1:5000/fusion", json=payload)
+        response = requests.post(URL + "/fusion", json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn("name", response.json())
 
@@ -48,12 +50,12 @@ class TestFlaskApp(unittest.TestCase):
                 "ability": "EARTH"
             }
         }
-        response = requests.post("http://127.0.0.1:5000/battle", json=payload)
+        response = requests.post(URL + "/battle", json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn("victor", response.json())
 
     def test_get_monster_endpoint(self):
-        response = requests.get("http://127.0.0.1:5000/monster")
+        response = requests.get(URL + "/monster")
         self.assertEqual(response.status_code, 200)
         self.assertIn("name", response.json())
 
@@ -67,7 +69,7 @@ class TestFlaskApp(unittest.TestCase):
             },
             "ability": "FIRE"
         }
-        response = requests.post("http://127.0.0.1:5000/image", json=payload)
+        response = requests.post(URL + "/image", json=payload)
         self.assertEqual(response.status_code, 200)
         self.assertIn("image_path", response.json())
 
