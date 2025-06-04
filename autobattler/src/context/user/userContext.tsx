@@ -60,7 +60,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   
   async function addFavorite(monsterId: number) {
     if (!user) {
-      console.error("User must be logged in to add favorites");
+      console.warn("User must be logged in to add favorites");
       return;
     }
 

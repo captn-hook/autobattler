@@ -152,7 +152,7 @@ monsters = [dragon, troll, deer, nymph, storm_spirit]
 
 def ollama(Class=Monster):
     model = models.openai(
-        "llama3.2:3b",
+        "gemma3:4b",
         base_url="http://localhost:11434/v1",
         api_key='ollama'
     )
@@ -259,6 +259,7 @@ def new_monster():
 app = Flask(__name__)
 @app.route('/fusion', methods=['POST'])
 def fusion():
+    print("Received fusion request")
     data = request.json
     monster1 = Monster(**data['monster1'])
     monster2 = Monster(**data['monster2'])
@@ -276,6 +277,7 @@ def fusion():
 
 @app.route('/battle', methods=['POST'])
 def battle():
+    print("Received battle request")
     data = request.json
     monster1 = Monster(**data['monster1'])
     monster2 = Monster(**data['monster2'])
