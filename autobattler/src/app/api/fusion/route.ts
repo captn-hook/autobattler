@@ -2,7 +2,7 @@ import { auth, firestore } from '@/app/api/firebaseServer';
 import { doc, getDoc } from 'firebase/firestore';
 
 import { fetchId, putMonster } from '@/app/api/monsters/monsters';
-import type { MonsterSimple } from '@/types/monster';
+import type { MonsterSimple, Monster } from '@/types/monster';
 
 const FLASK_BASE_URL = (process.env.FLASK_BASE_URL || "http://localhost:5000") + "/fusion";
 
@@ -40,14 +40,14 @@ export async function POST(req: Request) {
         const fusionId1 = `${monsterId1}-${monsterId2}`;
         const fusionId2 = `${monsterId2}-${monsterId1}`;
 
-        const fusionDoc1 = await firestore.doc(`monsters/${fusionId1}`).get();
-        const fusionDoc2 = await firestore.doc(`monsters/${fusionId2}`).get();
+        const parent1DocRef = await firestore.collection('monsters').where('fusionId', '==', fusionId1).get();
+        const parent2DocRef = await firestore.collection('monsters').where('fusionId', '==', fusionId2).get();
 
-        if (fusionDoc1.exists || fusionDoc2.exists) {
-            const existingFusion = fusionDoc1.exists ? fusionDoc1.data() : fusionDoc2.data();
-            if (existingFusion) {
-                return new Response(JSON.stringify(existingFusion as MonsterSimple), { status: 200 });
-            }
+        if (!parent1DocRef.empty || !parent2DocRef.empty) {
+            const existingMonster = parent1DocRef.empty ? parent2DocRef.docs[0] : parent1DocRef.docs[0];
+            // If a monster already exists, return it
+            const monster = existingMonster.data() as Monster;
+            return new Response(JSON.stringify(monster), { status: 200 });
         }
 
         // Fetch the monsters from the database
