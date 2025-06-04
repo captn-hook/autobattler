@@ -27,14 +27,14 @@ class Monster(BaseModel):
     stats: Stats
     ability: Literal[
         "FIRE", "WATER", "EARTH", "AIR", "MAGIC", "GHOST", "STEALTH", "WRATH", "IMMORTAL",
-        "SHIELD", "HEAL", "STUN", "POISON", "LUCK", "CHARM", "INVISIBILITY", "FROST", 
+        "SHIELD", "HEAL", "STUN", "POISON", "LUCK", "CHARM", "INVISIBLE", "FROST", 
         "LIGHTNING", "TELEPORT", "CURSE", "REGENERATE", "BERSERK", "CLAIRVOYANCE", 
-        "CAMOUFLAGE", "GRAVITY", "PSYCHIC", "TIME_SHIFT", "BLIND", "VENOM", "DRAIN", 
+        "CAMOUFLAGE", "GRAVITY", "PSYCHIC", "TIMESHIFT", "BLIND", "VENOM", "DRAIN", 
         "MIRROR", "SUMMON", "PLAGUE", "AURA", "SACRIFICE", "DIVINE", "FROG", "DOG", 
         "FLY", "SHAPESHIFT", "TELEKINESIS", "OMNIPOTENCE", "OMNIPRESENCE", "OMNISCIENCE",
-        "REBIRTH", "EARTHQUAKE", "FLIGHT", "REGENERATION", "SHADOW", "PRECISION",
-        "SONG", "CHARGE", "SPELLCAST", "TRANSFORM", "DRAIN", "CRUSH", "WISH",
-        "NECROMANCY", "MULTI-ATTACK"
+        "REBIRTH", "EARTHQUAKE", "SHADOW", "PRECISION",
+        "SONG", "CHARGE", "SPELLCAST", "TRANSFORM", "CRUSH", "WISH",
+        "NECROMANCY", "MULTIATTACK", "FISH", "NATURE"
     ]
 
     def __str__(self):
@@ -42,168 +42,339 @@ class Monster(BaseModel):
                 f"Stats: {self.stats}, Ability: {self.ability}")
 
 class BattleReport(BaseModel):
-    victor: str
+    winner: int
+    loser: int
     description: str
     
     def __str__(self):
         return (f"{self.description}\n"
                 f"{self.victor} wins the battle!")
         
-dragon = Monster(
+class BattleReportDatabase(BattleReport):
+    id: str = ""  # Filled by the server, includes both monster IDs
+        
+class MonsterDatabase(Monster):
+    # This class extends the Monster class to represent as it is in the database
+    id: int = 0 # Filled by the server, sequential
+    created_at: str = "" # Filled by the server
+    owner: str = "" # Filled by the server, will be blank from this test script
+    parent1: int = 0 # Filled by the server, will be 0 for this test script
+    parent2: int = 0 # Filled by the server, will be 0 for this test script
+    wins: list[int] = []  # List of battle report IDs where this monster won
+    losses: list[int] = []  # List of battle report IDs where this monster lost
+    level: int = 1  # Starting level for the monster, always one for now
+    
+progenitor = MonsterDatabase(
+    name="Progenitor",
+    description="The first monster, creator of all monsters",
+    stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=1, luck=1, charm=1),
+    ability="OMNIPOTENCE",
+    parent1=0, # parents are itself for the progenitor
+    parent2=0,
+    level=100 
+)
+
+magic = MonsterDatabase(
+    name="Magic",
+    description="A primordial being of pure magic, the source of all magical abilities",
+    stats=Stats(health=50, defense=10, strength=10, intelligence=80, speed=10, magic=100, stealth=1, luck=50, charm=1),
+    ability="MAGIC",
+    parent1=0,  
+    parent2=0,  
+    level=99
+)
+
+earth = MonsterDatabase(
+    name="Earth God",
+    description="A primordial being that is the source of all earth essence",
+    stats=Stats(health=50, defense=100, strength=80, intelligence=10, speed=1, magic=50, stealth=1, luck=1, charm=1),
+    ability="EARTH",
+    parent1=0,  
+    parent2=1,
+    level=98
+)
+
+fire = MonsterDatabase(
+    name="Fire God",
+    description="A primordial being that is the source of all fire essence",
+    stats=Stats(health=50, defense=10, strength=100, intelligence=10, speed=1, magic=50, stealth=1, luck=1, charm=1),
+    ability="FIRE",
+    parent1=0,
+    parent2=1,  
+    level=98
+)
+
+water = MonsterDatabase(
+    name="Water God",
+    description="A primordial being that is the source of all water essence",
+    stats=Stats(health=50, defense=10, strength=10, intelligence=100, speed=1, magic=50, stealth=1, luck=1, charm=1),
+    ability="WATER",
+    parent1=0,  
+    parent2=1, 
+    level=98
+)
+
+air = MonsterDatabase(
+    name="Air God",
+    description="A primordial being that is the source of all air essence",
+    stats=Stats(health=50, defense=10, strength=10, intelligence=10, speed=100, magic=50, stealth=1, luck=1, charm=1),
+    ability="AIR",
+    parent1=0,
+    parent2=1, 
+    level=98
+)
+
+nature = MonsterDatabase(
+    name="Nature",
+    description="A primordial being that embodies the essence of nature",
+    stats=Stats(health=50, defense=50, strength=50, intelligence=50, speed=50, magic=50, stealth=1, luck=1, charm=1),
+    ability="NATURE",
+    parent1=earth.id,
+    parent2=magic.id,
+    level=97
+)
+
+lizard = MonsterDatabase(
+    name="Lizard",
+    description="A small lizard that can camouflage itself in its surroundings",
+    stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=100, luck=100, charm=1),\
+    ability="CAMOUFLAGE",
+    parent1=nature.id,
+    parent2=earth.id, 
+)
+    
+fish = MonsterDatabase(
+    name="Fish",
+    description="A small fish that swims in the ocean, can breathe underwater",
+    stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=40, luck=6, charm=1),
+    ability="FISH",
+    parent1=nature.id,
+    parent2=water.id,
+)
+
+frog = MonsterDatabase(
+    name="Frog",
+    description="A small frog that can jump high and catch insects with its tongue",
+    stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=50, luck=10, charm=1),
+    ability="FROG",
+    parent1=water.id,
+    parent2=earth.id,
+)
+
+dog = MonsterDatabase(
+    name="Dog",
+    description="A loyal dog that can track scents and bark loudly",
+    stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=20, luck=5, charm=1),
+    ability="DOG",
+    parent1=nature.id,
+    parent2=progenitor.id, 
+)
+        
+dragon = MonsterDatabase(
     name="Dragon",
     description="A fierce dragon with scales as tough as steel",
     stats=Stats(health=100, defense=90, strength=80, intelligence=70, speed=100, magic=90, stealth=30, luck=50, charm=50),
-    ability="FIRE"
+    ability="FIRE",
+    parent1=fire.id, 
+    parent2=lizard.id,
 )
 
-troll = Monster(
+troll = MonsterDatabase(
     name="Troll",
     description="A hulking troll who lives in a cave",
     stats=Stats(health=80, defense=70, strength=90, intelligence=30, speed=40, magic=20, stealth=10, luck=70, charm=10),
-    ability="EARTH"
+    ability="EARTH",
+    parent1=earth.id,
+    parent2=magic.id,
 )
 
-deer = Monster(
+deer = MonsterDatabase(
     name="Deer",
     description="A graceful deer that runs away at the slightest sound",
     stats=Stats(health=10, defense=5, strength=15, intelligence=20, speed=80, magic=5, stealth=90, luck=90, charm=80),
-    ability="STEALTH"
+    ability="STEALTH",
+    parent1=nature.id,
+    parent2=dog.id,
 )
 
-nymph = Monster(
+nymph = MonsterDatabase(
     name="Nymph",
     description="A mystical nymph that can heal itself and others",
     stats=Stats(health=60, defense=40, strength=30, intelligence=80, speed=70, magic=100, stealth=50, luck=60, charm=90),
-    ability="HEAL"
+    ability="HEAL",
+    parent1=water.id,
+    parent2=magic.id,
 )
 
-storm_spirit = Monster(
+storm_spirit = MonsterDatabase(
     name="Storm Spirit",
     description="A spirit of the storm that can control lightning and wind",
     stats=Stats(health=70, defense=60, strength=50, intelligence=90, speed=80, magic=100, stealth=40, luck=70, charm=60),
-    ability="LIGHTNING"
+    ability="LIGHTNING",
+    parent1=air.id,
+    parent2=magic.id,
 )
-phoenix = Monster(
+phoenix = MonsterDatabase(
     name="Phoenix",
     description="A majestic bird that rises from its ashes, engulfed in flames",
     stats=Stats(health=100, defense=50, strength=70, intelligence=80, speed=90, magic=100, stealth=40, luck=60, charm=100),
-    ability="REBIRTH"
+    ability="REBIRTH",
+    parent1=fire.id,
+    parent2=magic.id,
 )
 
-golem = Monster(
+golem = MonsterDatabase(
     name="Golem",
     description="A massive creature made of stone, nearly indestructible",
     stats=Stats(health=100, defense=100, strength=100, intelligence=30, speed=20, magic=10, stealth=5, luck=40, charm=10),
-    ability="EARTHQUAKE"
+    ability="EARTHQUAKE",
+    parent1=earth.id,
+    parent2=magic.id,
 )
 
-griffin = Monster(
+griffin = MonsterDatabase(
     name="Griffin",
     description="A noble beast with the body of a lion and the wings of an eagle",
     stats=Stats(health=100, defense=80, strength=90, intelligence=70, speed=80, magic=50, stealth=30, luck=50, charm=70),
-    ability="FLIGHT"
+    ability="FLY",
+    parent1=air.id,
+    parent2=deer.id,
 )
 
-hydra = Monster(
+hydra = MonsterDatabase(
     name="Hydra",
     description="A multi-headed serpent that regenerates heads when one is cut off",
     stats=Stats(health=100, defense=70, strength=100, intelligence=60, speed=50, magic=40, stealth=20, luck=50, charm=30),
-    ability="REGENERATION"
+    ability="HEAL",
+    parent1=dragon.id,
+    parent2=nymph.id,
 )
 
-shadow_wraith = Monster(
+shadow_wraith = MonsterDatabase(
     name="Shadow Wraith",
     description="A ghostly figure that moves silently and strikes from the shadows",
     stats=Stats(health=50, defense=30, strength=60, intelligence=80, speed=100, magic=90, stealth=100, luck=70, charm=40),
-    ability="SHADOW"
+    ability="SHADOW",
+    parent1=nymph.id,
+    parent2=storm_spirit.id,
 )
 
-centaur = Monster(
+centaur = MonsterDatabase(
     name="Centaur",
     description="A half-human, half-horse warrior skilled in archery and combat",
     stats=Stats(health=90, defense=70, strength=80, intelligence=60, speed=70, magic=30, stealth=40, luck=50, charm=60),
-    ability="PRECISION"
+    ability="PRECISION",
+    parent1=deer.id,
+    parent2=griffin.id,
 )
 
-mermaid = Monster(
+mermaid = MonsterDatabase(
     name="Mermaid",
     description="A beautiful aquatic creature that can enchant sailors with its song",
     stats=Stats(health=60, defense=40, strength=30, intelligence=70, speed=50, magic=80, stealth=50, luck=60, charm=100),
-    ability="SONG"
+    ability="SONG",
+    parent1=fish.id,
+    parent2=nymph.id,
 )
 
-minotaur = Monster(
+minotaur = MonsterDatabase(
     name="Minotaur",
     description="A fearsome beast with the body of a man and the head of a bull",
     stats=Stats(health=100, defense=90, strength=100, intelligence=40, speed=50, magic=20, stealth=30, luck=40, charm=20),
-    ability="CHARGE"
+    ability="CHARGE",
+    parent1=centaur.id,
+    parent2=deer.id,
 )
 
-fairy = Monster(
+fairy = MonsterDatabase(
     name="Fairy",
     description="A tiny magical creature that can cast powerful spells",
     stats=Stats(health=40, defense=20, strength=20, intelligence=90, speed=80, magic=100, stealth=70, luck=80, charm=90),
-    ability="SPELLCAST"
+    ability="SPELLCAST",
+    parent1=nymph.id,
+    parent2=mermaid.id,
 )
 
-werewolf = Monster(
+werewolf = MonsterDatabase(
     name="Werewolf",
     description="A cursed human that transforms into a wolf under the full moon",
     stats=Stats(health=100, defense=60, strength=90, intelligence=50, speed=80, magic=40, stealth=60, luck=50, charm=40),
-    ability="TRANSFORM"
+    ability="TRANSFORM",
+    parent1=minotaur.id,
+    parent2=shadow_wraith.id,
 )
 
-vampire = Monster(
+vampire = MonsterDatabase(
     name="Vampire",
     description="An undead creature that feeds on the blood of the living",
     stats=Stats(health=80, defense=50, strength=70, intelligence=90, speed=70, magic=60, stealth=80, luck=60, charm=100),
-    ability="DRAIN"
+    ability="DRAIN",
+    parent1=werewolf.id,
+    parent2=werewolf.id,
 )
 
-kraken = Monster(
+kraken = MonsterDatabase(
     name="Kraken",
     description="A massive sea monster with tentacles that can crush ships",
     stats=Stats(health=100, defense=100, strength=100, intelligence=50, speed=30, magic=40, stealth=20, luck=30, charm=10),
-    ability="CRUSH"
+    ability="CRUSH",
+    parent1=fish.id,
+    parent2=fish.id, 
 )
 
-djinn = Monster(
+djinn = MonsterDatabase(
     name="Djinn",
     description="A mystical being that can grant wishes, but at a cost",
     stats=Stats(health=70, defense=40, strength=50, intelligence=100, speed=60, magic=100, stealth=50, luck=80, charm=90),
-    ability="WISH"
+    ability="WISH",
+    parent1=magic.id,
+    parent2=magic.id,
 )
 
-lich = Monster(
+lich = MonsterDatabase(
     name="Lich",
     description="A powerful undead sorcerer that commands dark magic",
     stats=Stats(health=90, defense=60, strength=50, intelligence=100, speed=40, magic=100, stealth=30, luck=50, charm=40),
-    ability="NECROMANCY"
+    ability="NECROMANCY",
+    parent1=shadow_wraith.id,
+    parent2=shadow_wraith.id,
 )
 
-chimera = Monster(
+chimera = MonsterDatabase(
     name="Chimera",
     description="A monstrous creature with the heads of a lion, goat, and serpent",
     stats=Stats(health=100, defense=80, strength=100, intelligence=60, speed=70, magic=50, stealth=40, luck=50, charm=30),
-    ability="MULTI-ATTACK"
+    ability="MULTIATTACK",
+    parent1=griffin.id,
+    parent2=centaur.id,
 )
 
 # Add the protocol to the URL
 url = 'http://localhost:3000/api/monsters'
 
-def post_monster(monster: Monster):
+def post_monster(monster: MonsterDatabase):
     response = requests.post(url, json=monster.model_dump())
     if response.status_code == 201:
         print(f"Successfully posted monster: {monster.name}")
     else:
         print(f"Failed to post monster: {monster.name}, Status Code: {response.status_code}")
 
+post_monster(progenitor)
+post_monster(magic)
+post_monster(earth)
+post_monster(fire)
+post_monster(water)
+post_monster(air)
+post_monster(nature)
+post_monster(lizard)
+post_monster(fish)
+post_monster(frog)
+post_monster(dog)
 post_monster(dragon)
 post_monster(troll)
 post_monster(deer)
 post_monster(nymph)
 post_monster(storm_spirit)
-
 post_monster(phoenix)
 post_monster(golem)
 post_monster(griffin)

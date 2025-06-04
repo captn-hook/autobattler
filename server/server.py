@@ -17,64 +17,64 @@ import base64
 # )
 
 class AbilityEnum(str, Enum):
-    FIRE = "FIRE"
-    WATER = "WATER"
-    EARTH = "EARTH"
-    AIR = "AIR"
-    MAGIC = "MAGIC"
-    GHOST = "GHOST"
-    STEALTH = "STEALTH"
-    WRATH = "WRATH"
-    IMMORTAL = "IMMORTAL"
-    SHIELD = "SHIELD"
-    HEAL = "HEAL"
-    STUN = "STUN"
-    POISON = "POISON"
-    LUCK = "LUCK"
-    CHARM = "CHARM"
-    INVISIBILITY = "INVISIBILITY"
-    FROST = "FROST"
-    LIGHTNING = "LIGHTNING"
-    TELEPORT = "TELEPORT"
-    CURSE = "CURSE"
-    REGENERATE = "REGENERATE"
-    BERSERK = "BERSERK"
-    CLAIRVOYANCE = "CLAIRVOYANCE"
-    CAMOUFLAGE = "CAMOUFLAGE"
-    GRAVITY = "GRAVITY"
-    PSYCHIC = "PSYCHIC"
-    TIME_SHIFT = "TIME_SHIFT"
-    BLIND = "BLIND"
-    VENOM = "VENOM"
-    DRAIN = "DRAIN"
-    MIRROR = "MIRROR"
-    SUMMON = "SUMMON"
-    PLAGUE = "PLAGUE"
-    AURA = "AURA"
-    SACRIFICE = "SACRIFICE"
-    DIVINE = "DIVINE"
-    FROG = "FROG"
-    DOG = "DOG"
-    FLY = "FLY"
-    SHAPESHIFT = "SHAPESHIFT"
-    TELEKINESIS = "TELEKINESIS"
-    OMNIPOTENCE = "OMNIPOTENCE"
-    OMNIPRESENCE = "OMNIPRESENCE"
-    OMNISCIENCE = "OMNISCIENCE"
-    REBIRTH = "REBIRTH"
-    EARTHQUAKE = "EARTHQUAKE"
-    FLIGHT = "FLIGHT"
-    REGENERATION = "REGENERATION"
-    SHADOW = "SHADOW"
-    PRECISION = "PRECISION"
-    SONG = "SONG"
-    CHARGE = "CHARGE"
-    SPELLCAST = "SPELLCAST"
-    TRANSFORM = "TRANSFORM"
-    CRUSH = "CRUSH"
-    WISH = "WISH"
-    NECROMANCY = "NECROMANCY"
-    MULTI_ATTACK = "MULTI-ATTACK"
+    FIRE = "FIRE",
+    WATER = "WATER",
+    EARTH = "EARTH",
+    AIR = "AIR",
+    MAGIC = "MAGIC",
+    GHOST = "GHOST",
+    STEALTH = "STEALTH",
+    WRATH = "WRATH",
+    IMMORTAL = "IMMORTAL",
+    SHIELD = "SHIELD",
+    HEAL = "HEAL",
+    STUN = "STUN",
+    POISON = "POISON",
+    LUCK = "LUCK",
+    CHARM = "CHARM",
+    INVISIBLE = "INVISIBLE",
+    FROST = "FROST",
+    LIGHTNING = "LIGHTNING",
+    TELEPORT = "TELEPORT",
+    CURSE = "CURSE",
+    REGENERATE = "REGENERATE",
+    BERSERK = "BERSERK",
+    CLAIRVOYANCE = "CLAIRVOYANCE",
+    CAMOUFLAGE = "CAMOUFLAGE",
+    GRAVITY = "GRAVITY",
+    PSYCHIC = "PSYCHIC",
+    TIME_SHIFT = "TIMESHIFT",
+    BLIND = "BLIND",
+    VENOM = "VENOM",
+    DRAIN = "DRAIN",
+    MIRROR = "MIRROR",
+    SUMMON = "SUMMON",
+    PLAGUE = "PLAGUE",
+    AURA = "AURA",
+    SACRIFICE = "SACRIFICE",
+    DIVINE = "DIVINE",
+    FROG = "FROG",
+    DOG = "DOG",
+    FLY = "FLY",
+    SHAPESHIFT = "SHAPESHIFT",
+    TELEKINESIS = "TELEKINESIS",
+    OMNIPOTENCE = "OMNIPOTENCE",
+    OMNIPRESENCE = "OMNIPRESENCE",
+    OMNISCIENCE = "OMNISCIENCE",
+    REBIRTH = "REBIRTH",
+    EARTHQUAKE = "EARTHQUAKE",
+    SHADOW = "SHADOW",
+    PRECISION = "PRECISION",
+    SONG = "SONG",
+    CHARGE = "CHARGE",
+    SPELLCAST = "SPELLCAST",
+    TRANSFORM = "TRANSFORM",
+    CRUSH = "CRUSH",
+    WISH = "WISH",
+    NECROMANCY = "NECROMANCY",
+    MULTIATTACK = "MULTIATTACK",
+    FISH = "FISH",
+    NATURE = "NATURE",
 
 class Ability(BaseModel):
     ability: AbilityEnum
@@ -151,11 +151,14 @@ storm_spirit = Monster(
 monsters = [dragon, troll, deer, nymph, storm_spirit]
 
 def ollama(Class=Monster):
-    model = models.openai(
-        "gemma3:4b",
-        base_url="http://localhost:11434/v1",
-        api_key='ollama'
-    )
+    try:
+        model = models.openai(
+            "gemma3:4b",
+            base_url="http://localhost:11434/v1",
+            api_key='ollama'
+        )
+    except Exception as e:
+        print("Error loading model")
 
     return generate.json(model, Class)
 
@@ -189,9 +192,7 @@ def monster_fusion(monster1: Monster, monster2: Monster) -> Monster:
         f"Monster 2: {monster2}\n\n"
         "The new monster should have a fitting name and statistics creatively combining the attributes of both monsters.\n"
         "It's description should reflect it's character and unique features, without directly mentioning it's parents.\n"
-        "Keep it concise and creative.\n\n"
-        "And it's special ability should be one of the following that makes the most sense for the new monster: "
-        ", ".join(ability for ability in abilities if isinstance(ability, str)) + "\n\n"
+        "Keep it concise and creative, using the parent monsters as style guides.\n"
     )
     
     result1 = generator(prompt1)
@@ -306,4 +307,4 @@ def battle():
 
 # Run the Flask app
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=5000)

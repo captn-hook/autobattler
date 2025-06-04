@@ -5,11 +5,27 @@ import { useSelection } from '@/context/selection/selectionContext';
 import { Monster } from '@/types/monster';
 import { Stats } from '@/types/stats';
 
+const image_list = [
+    'air',
+    'earth',
+    'earthquake',
+    'fire',
+    'fish',
+    'fly',
+    'heal',
+    'stun',
+    'water'
+];
+
 export default function MonsterCard({ monster, size = 'medium' }: { monster: Monster; size?: 'small' | 'medium' | 'large' }) {
     const { setMonster1, setMonster2 } = useSelection();
 
     if (monster.image === "") {
-        monster.image = '/placeholder.png'; // Fallback image if none provided
+        if (image_list.includes(monster.ability.toLowerCase())) {
+            monster.image = `/${monster.ability.toLowerCase()}.png`; // Use ability name for image
+        } else {
+            monster.image = '/placeholder.png'; // Fallback image if none provided
+        }
     }
 
     let sizeW;
@@ -26,7 +42,7 @@ export default function MonsterCard({ monster, size = 'medium' }: { monster: Mon
         default:
             sizeW = 500; // Default to medium size
     }
-
+    
     return (
         <Card sx={{ width: sizeW, margin: 0.5 }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
             <Box sx={{ display: 'flex', alignItems: 'center',    borderBottom: '1px solid var(--color-secondary)' }}>

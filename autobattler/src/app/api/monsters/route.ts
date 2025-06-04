@@ -1,6 +1,6 @@
 import { orderBy, collection, query, where, getDocs, limit, documentId } from "firebase/firestore";
 import { firestore } from "@/app/firebaseConfig";
-import { fetchId, putMonster } from './monsters';
+import { putMonster } from './monsters';
 import type { MonsterSimple, Monster } from '@/types/monster';
 
 function isValidSortField(sort: string | string[] | undefined): boolean {
@@ -50,6 +50,7 @@ export async function POST(req: Request) {
     try {
         const monsterData: MonsterSimple = await req.json();
         if (!monsterData || !monsterData.name || !monsterData.stats) {
+            console.error("Invalid monster data:", monsterData);
             return new Response(JSON.stringify({ error: "Invalid monster data" }), { status: 400 });
         }
         const newMonster = await putMonster(monsterData);

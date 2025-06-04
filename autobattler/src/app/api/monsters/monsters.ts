@@ -29,7 +29,7 @@ export async function fetchName(name: string) {
 export function getNextId() {
     // get the length of the monsters collection and add 1 to it
     const monstersRef = collection(firestore, "monsters");
-    return getDocs(monstersRef).then(snapshot => snapshot.size + 1);
+    return getDocs(monstersRef).then(snapshot => snapshot.size);
 }
 
 export async function putMonster(monster: MonsterSimple) {
@@ -52,7 +52,13 @@ export async function putMonster(monster: MonsterSimple) {
         stats: monster.stats,
         ability: monster.ability,
         image: "",
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        owner: "", // this should try to get auth
+        parent1: 0, // progenitor
+        parent2: 0,
+        wins: [],
+        losses: [],
+        level: 1 // default level
     };
 
     // Add the monster to the database

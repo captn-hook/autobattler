@@ -16,7 +16,7 @@ export enum Ability {
     POISON = "POISON",
     LUCK = "LUCK",
     CHARM = "CHARM",
-    INVISIBLE = "INVISIBILITY",
+    INVISIBLE = "INVISIBLE",
     FROST = "FROST",
     LIGHTNING = "LIGHTNING",
     TELEPORT = "TELEPORT",
@@ -27,7 +27,7 @@ export enum Ability {
     CAMOUFLAGE = "CAMOUFLAGE",
     GRAVITY = "GRAVITY",
     PSYCHIC = "PSYCHIC",
-    TIME_SHIFT = "TIME_SHIFT",
+    TIME_SHIFT = "TIMESHIFT",
     BLIND = "BLIND",
     VENOM = "VENOM",
     DRAIN = "DRAIN",
@@ -44,7 +44,21 @@ export enum Ability {
     TELEKINESIS = "TELEKINESIS",
     OMNIPOTENCE = "OMNIPOTENCE",
     OMNIPRESENCE = "OMNIPRESENCE",
-    OMNISCIENCE = "OMNISCIENCE"
+    OMNISCIENCE = "OMNISCIENCE",
+    REBIRTH = "REBIRTH",
+    EARTHQUAKE = "EARTHQUAKE",
+    SHADOW = "SHADOW",
+    PRECISION = "PRECISION",
+    SONG = "SONG",
+    CHARGE = "CHARGE",
+    SPELLCAST = "SPELLCAST",
+    TRANSFORM = "TRANSFORM",
+    CRUSH = "CRUSH",
+    WISH = "WISH",
+    NECROMANCY = "NECROMANCY",
+    MULTIATTACK = "MULTIATTACK",
+    FISH = "FISH",
+    NATURE = "NATURE"
 }
 
 export  type Monster = {
@@ -55,6 +69,12 @@ export  type Monster = {
     ability: Ability;
     image: string;
     createdAt: string;
+    owner: string; 
+    parent1: number;
+    parent2: number;
+    wins: string[];
+    losses: string[];
+    level: number;
 }
 
 export type MonsterSimple = {
@@ -62,4 +82,18 @@ export type MonsterSimple = {
     description: string;
     stats: Stats;
     ability: Ability;
+}
+
+export type BattleReport = {
+    winner: number;
+    loser: number;
+    description: string;
+    createdAt: string;
+    id: string;
+}
+
+export type BattleReportSimple = {
+    winner: number;
+    loser: number;
+    description: string;
 }
