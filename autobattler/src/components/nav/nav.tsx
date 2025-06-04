@@ -63,7 +63,6 @@ export default function Nav() {
                                 alt={`Monster ${selection.monster1}`}
                                 width={40}
                                 height={40}
-                                style={{ borderRadius: '50%' }}
                             />
                         </>
                     )}
