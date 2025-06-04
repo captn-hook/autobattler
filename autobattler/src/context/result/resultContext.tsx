@@ -1,5 +1,5 @@
 'use client';
-import { useContext, createContext, useState, useEffect, ReactNode } from 'react';
+import { useContext, createContext, useState, ReactNode } from 'react';
 import type { Monster } from '@/types/monster';
 
 interface ResultContextValue {

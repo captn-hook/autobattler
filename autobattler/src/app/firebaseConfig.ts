@@ -1,7 +1,9 @@
+'use client';
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+console.log("Initializing Firebase Client SDK...");
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "pokemone-b4cdd.firebaseapp.com",
@@ -12,7 +14,7 @@ const firebaseConfig = {
   measurementId: "G-MHH18VV2H5"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig, 'clientApp');
 const auth = getAuth(app);
 const firestore = getFirestore(app);
 

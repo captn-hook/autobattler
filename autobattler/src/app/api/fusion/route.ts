@@ -1,10 +1,32 @@
+import { auth, firestore } from '@/app/api/firebaseServer';
+import { doc, getDoc } from 'firebase/firestore';
+
 import { fetchId, putMonster } from '@/app/api/monsters/monsters';
 import type { MonsterSimple } from '@/types/monster';
 
 const FLASK_BASE_URL = (process.env.FLASK_BASE_URL || "http://localhost:5000") + "/fusion";
 
 export async function POST(req: Request) {
-    console.log("Received POST request to /api/fusion => ", FLASK_BASE_URL); 
+
+    let uid = "";
+    // Check if the request is authenticated
+    try {
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+        }
+        const idToken = authHeader.split(' ')[1];
+        const decodedToken = await auth.verifyIdToken(idToken);
+        uid = decodedToken.uid;
+    } catch (error) {
+        console.error("Authentication error:", error);
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
+    if (!uid || uid === "") {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+    }
+
     try {
         // Parse the request body
         const body = await req.json();
@@ -12,6 +34,20 @@ export async function POST(req: Request) {
 
         if (!monsterId1 || !monsterId2) {
             return new Response(JSON.stringify({ error: "Both monsterId1 and monsterId2 are required" }), { status: 400 });
+        }
+
+        // Check if a monster with the given parent IDs already exists
+        const fusionId1 = `${monsterId1}-${monsterId2}`;
+        const fusionId2 = `${monsterId2}-${monsterId1}`;
+
+        const fusionDoc1 = await firestore.doc(`monsters/${fusionId1}`).get();
+        const fusionDoc2 = await firestore.doc(`monsters/${fusionId2}`).get();
+
+        if (fusionDoc1.exists || fusionDoc2.exists) {
+            const existingFusion = fusionDoc1.exists ? fusionDoc1.data() : fusionDoc2.data();
+            if (existingFusion) {
+                return new Response(JSON.stringify(existingFusion as MonsterSimple), { status: 200 });
+            }
         }
 
         // Fetch the monsters from the database
@@ -41,7 +77,7 @@ export async function POST(req: Request) {
         const fusionResult = await response.json() as MonsterSimple;
 
         // Save the new fused monster to the database
-        const newMonster = await putMonster(fusionResult);
+        const newMonster = await putMonster(fusionResult, uid, monster1.id, monster2.id);
 
         // Return the new fused monster
         return new Response(JSON.stringify(newMonster), { status: 200 });

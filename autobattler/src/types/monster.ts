@@ -70,8 +70,7 @@ export  type Monster = {
     image: string;
     createdAt: string;
     owner: string; 
-    parent1: number;
-    parent2: number;
+    fusionId: string;
     wins: string[];
     losses: string[];
     level: number;

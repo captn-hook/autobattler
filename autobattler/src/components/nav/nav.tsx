@@ -6,11 +6,43 @@ import LoginIcon from '@mui/icons-material/Login';
 import { useUser } from '@/context/user/userContext';
 import { useSelection } from '@/context/selection/selectionContext';
 import { useResult } from '@/context/result/resultContext';
+import { auth } from '@/app/firebaseConfig';
 
 export default function Nav() {
-    const { user, login, logout, addFavorite } = useUser();
+    const { user, login, logout } = useUser();
     const { selection } = useSelection();
     const { result, setResult } = useResult();
+
+    
+    const handleFetchWithAuth = async (url: string, body: object) => {
+        try {
+            const currentUser = auth.currentUser;
+
+            if (!currentUser) {
+                console.error('User is not authenticated');
+                return;
+            }
+
+            const token = await currentUser.getIdToken(); // Get Firebase Auth token
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`, // Include token in Authorization header
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
         <AppBar position="static">
@@ -35,7 +67,7 @@ export default function Nav() {
                             />
                         </>
                     )}
-                    {selection.monster1 && selection.monster2 && (
+                    {selection.monster1 && selection.monster2 && user && (
                         // Stack vs and x button vertically
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0 8px' }}>
                             <Button
@@ -48,28 +80,16 @@ export default function Nav() {
                                         return;
                                     }
                                     // Handle vs click
-                                    fetch('/api/battle', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify({
-                                            monsterId1: selection.monster1.id,
-                                            monsterId2: selection.monster2.id,
-                                        }),
-                                    })
-                                        .then((response) => {
-                                            if (!response.ok) {
-                                                throw new Error('Network response was not ok');
-                                            }
-                                            return response.json();
-                                        })
-                                        .then((data) => {
-                                            setResult(data);
-                                        })
-                                        .catch((error) => {
-                                            console.error('Error:', error);
-                                        });
+                                    // Set loading
+                                    console.log('Starting battle between', selection.monster1.name, 'and', selection.monster2.name);
+                                    handleFetchWithAuth('/api/battle', {
+                                        monsterId1: selection.monster1.id,
+                                        monsterId2: selection.monster2.id,
+                                    }).then((data) => {
+                                        console.log('Battle result:', data);
+                                    }).catch((error) => {
+                                        console.error('Error during battle:', error);
+                                    });
                                 }}>
                                 VS
                             </Button>
@@ -83,30 +103,16 @@ export default function Nav() {
                                         console.error('Both monsters must be selected for fusion');
                                         return;
                                     }
-                                    fetch('/api/fusion', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                        },
-                                        body: JSON.stringify({
-                                            monsterId1: selection.monster1.id,
-                                            monsterId2: selection.monster2.id,
-                                        }),
-                                    })
-                                        .then((response) => {
-                                            if (!response.ok) {
-                                                console.warn('Failed to fuse monsters:', response.statusText);
-                                                return response.json();
-                                            }
-                                            return response.json();
-                                        })
-                                        .then((data) => {
-                                            setResult(data).then((r) => {
-                                                if (r && r.id) {
-                                                    addFavorite?.(r.id);
-                                                }
-                                            });
-                                        });
+                                    console.log('Fusing monsters', selection.monster1.name, 'and', selection.monster2.name);
+                                    handleFetchWithAuth('/api/fusion', {
+                                        monsterId1: selection.monster1.id,
+                                        monsterId2: selection.monster2.id,
+                                    }).then((data) => {
+                                        console.log('Fusion result:', data);
+                                        setResult(data);
+                                    }).catch((error) => {
+                                        console.error('Error during fusion:', error);
+                                    });
                                 }}>
                                 X
                             </Button>

@@ -43,6 +43,8 @@ export default function MonsterCard({ monster, size = 'medium' }: { monster: Mon
             sizeW = 500; // Default to medium size
     }
     
+    sizeW = 400;
+
     return (
         <Card sx={{ width: sizeW, margin: 0.5 }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
             <Box sx={{ display: 'flex', alignItems: 'center',    borderBottom: '1px solid var(--color-secondary)' }}>

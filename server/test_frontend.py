@@ -58,8 +58,7 @@ class MonsterDatabase(Monster):
     id: int = 0 # Filled by the server, sequential
     created_at: str = "" # Filled by the server
     owner: str = "" # Filled by the server, will be blank from this test script
-    parent1: int = 0 # Filled by the server, will be 0 for this test script
-    parent2: int = 0 # Filled by the server, will be 0 for this test script
+    fusionId: str = ""  # Filled by the server, will be blank from this test script
     wins: list[int] = []  # List of battle report IDs where this monster won
     losses: list[int] = []  # List of battle report IDs where this monster lost
     level: int = 1  # Starting level for the monster, always one for now
@@ -69,9 +68,8 @@ progenitor = MonsterDatabase(
     description="The first monster, creator of all monsters",
     stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=1, luck=1, charm=1),
     ability="OMNIPOTENCE",
-    parent1=0, # parents are itself for the progenitor
-    parent2=0,
-    level=100 
+    fusionId="0-0", 
+    level=100,
 )
 
 magic = MonsterDatabase(
@@ -79,9 +77,8 @@ magic = MonsterDatabase(
     description="A primordial being of pure magic, the source of all magical abilities",
     stats=Stats(health=50, defense=10, strength=10, intelligence=80, speed=10, magic=100, stealth=1, luck=50, charm=1),
     ability="MAGIC",
-    parent1=0,  
-    parent2=0,  
-    level=99
+    fusionId=str(progenitor.id) + '-' + str(progenitor.id),  # Fusion ID is the progenitor's ID
+    level=99,
 )
 
 earth = MonsterDatabase(
@@ -89,9 +86,8 @@ earth = MonsterDatabase(
     description="A primordial being that is the source of all earth essence",
     stats=Stats(health=50, defense=100, strength=80, intelligence=10, speed=1, magic=50, stealth=1, luck=1, charm=1),
     ability="EARTH",
-    parent1=0,  
-    parent2=1,
-    level=98
+    fusionId=str(progenitor.id) + '-' + str(magic.id), 
+    level=98,
 )
 
 fire = MonsterDatabase(
@@ -99,8 +95,7 @@ fire = MonsterDatabase(
     description="A primordial being that is the source of all fire essence",
     stats=Stats(health=50, defense=10, strength=100, intelligence=10, speed=1, magic=50, stealth=1, luck=1, charm=1),
     ability="FIRE",
-    parent1=0,
-    parent2=1,  
+    fusionId=str(progenitor.id) + '-' + str(magic.id),
     level=98
 )
 
@@ -109,8 +104,7 @@ water = MonsterDatabase(
     description="A primordial being that is the source of all water essence",
     stats=Stats(health=50, defense=10, strength=10, intelligence=100, speed=1, magic=50, stealth=1, luck=1, charm=1),
     ability="WATER",
-    parent1=0,  
-    parent2=1, 
+    fusionId=str(progenitor.id) + '-' + str(magic.id),
     level=98
 )
 
@@ -119,8 +113,7 @@ air = MonsterDatabase(
     description="A primordial being that is the source of all air essence",
     stats=Stats(health=50, defense=10, strength=10, intelligence=10, speed=100, magic=50, stealth=1, luck=1, charm=1),
     ability="AIR",
-    parent1=0,
-    parent2=1, 
+    fusionId=str(progenitor.id) + '-' + str(magic.id),
     level=98
 )
 
@@ -129,8 +122,7 @@ nature = MonsterDatabase(
     description="A primordial being that embodies the essence of nature",
     stats=Stats(health=50, defense=50, strength=50, intelligence=50, speed=50, magic=50, stealth=1, luck=1, charm=1),
     ability="NATURE",
-    parent1=earth.id,
-    parent2=magic.id,
+    fusionId=str(earth.id) + '-' + str(magic.id),
     level=97
 )
 
@@ -139,8 +131,7 @@ lizard = MonsterDatabase(
     description="A small lizard that can camouflage itself in its surroundings",
     stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=100, luck=100, charm=1),\
     ability="CAMOUFLAGE",
-    parent1=nature.id,
-    parent2=earth.id, 
+    fusionId=str(nature.id) + '-' + str(earth.id), 
 )
     
 fish = MonsterDatabase(
@@ -148,8 +139,7 @@ fish = MonsterDatabase(
     description="A small fish that swims in the ocean, can breathe underwater",
     stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=40, luck=6, charm=1),
     ability="FISH",
-    parent1=nature.id,
-    parent2=water.id,
+    fusionId=str(nature.id) + '-' + str(water.id),
 )
 
 frog = MonsterDatabase(
@@ -157,8 +147,7 @@ frog = MonsterDatabase(
     description="A small frog that can jump high and catch insects with its tongue",
     stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=50, luck=10, charm=1),
     ability="FROG",
-    parent1=water.id,
-    parent2=earth.id,
+    fusionId=str(water.id) + '-' + str(earth.id),
 )
 
 dog = MonsterDatabase(
@@ -166,8 +155,7 @@ dog = MonsterDatabase(
     description="A loyal dog that can track scents and bark loudly",
     stats=Stats(health=1, defense=1, strength=1, intelligence=1, speed=1, magic=1, stealth=20, luck=5, charm=1),
     ability="DOG",
-    parent1=nature.id,
-    parent2=progenitor.id, 
+    fusionId=str(nature.id) + '-' + str(progenitor.id,) 
 )
         
 dragon = MonsterDatabase(
@@ -175,8 +163,7 @@ dragon = MonsterDatabase(
     description="A fierce dragon with scales as tough as steel",
     stats=Stats(health=100, defense=90, strength=80, intelligence=70, speed=100, magic=90, stealth=30, luck=50, charm=50),
     ability="FIRE",
-    parent1=fire.id, 
-    parent2=lizard.id,
+    fusionId=str(fire.id) + '-' + str(lizard.id),
 )
 
 troll = MonsterDatabase(
@@ -184,8 +171,7 @@ troll = MonsterDatabase(
     description="A hulking troll who lives in a cave",
     stats=Stats(health=80, defense=70, strength=90, intelligence=30, speed=40, magic=20, stealth=10, luck=70, charm=10),
     ability="EARTH",
-    parent1=earth.id,
-    parent2=magic.id,
+    fusionId=str(earth.id) + '-' + str(magic.id),
 )
 
 deer = MonsterDatabase(
@@ -193,8 +179,7 @@ deer = MonsterDatabase(
     description="A graceful deer that runs away at the slightest sound",
     stats=Stats(health=10, defense=5, strength=15, intelligence=20, speed=80, magic=5, stealth=90, luck=90, charm=80),
     ability="STEALTH",
-    parent1=nature.id,
-    parent2=dog.id,
+    fusionId=str(nature.id) + '-' + str(dog.id),
 )
 
 nymph = MonsterDatabase(
@@ -202,8 +187,7 @@ nymph = MonsterDatabase(
     description="A mystical nymph that can heal itself and others",
     stats=Stats(health=60, defense=40, strength=30, intelligence=80, speed=70, magic=100, stealth=50, luck=60, charm=90),
     ability="HEAL",
-    parent1=water.id,
-    parent2=magic.id,
+    fusionId=str(water.id) + '-' + str(magic.id),
 )
 
 storm_spirit = MonsterDatabase(
@@ -211,16 +195,14 @@ storm_spirit = MonsterDatabase(
     description="A spirit of the storm that can control lightning and wind",
     stats=Stats(health=70, defense=60, strength=50, intelligence=90, speed=80, magic=100, stealth=40, luck=70, charm=60),
     ability="LIGHTNING",
-    parent1=air.id,
-    parent2=magic.id,
+    fusionId=str(air.id) + '-' + str(magic.id),
 )
 phoenix = MonsterDatabase(
     name="Phoenix",
     description="A majestic bird that rises from its ashes, engulfed in flames",
     stats=Stats(health=100, defense=50, strength=70, intelligence=80, speed=90, magic=100, stealth=40, luck=60, charm=100),
     ability="REBIRTH",
-    parent1=fire.id,
-    parent2=magic.id,
+    fusionId=str(fire.id) + '-' + str(magic.id),
 )
 
 golem = MonsterDatabase(
@@ -228,8 +210,7 @@ golem = MonsterDatabase(
     description="A massive creature made of stone, nearly indestructible",
     stats=Stats(health=100, defense=100, strength=100, intelligence=30, speed=20, magic=10, stealth=5, luck=40, charm=10),
     ability="EARTHQUAKE",
-    parent1=earth.id,
-    parent2=magic.id,
+    fusionId=str(earth.id) + '-' + str(magic.id),
 )
 
 griffin = MonsterDatabase(
@@ -237,8 +218,7 @@ griffin = MonsterDatabase(
     description="A noble beast with the body of a lion and the wings of an eagle",
     stats=Stats(health=100, defense=80, strength=90, intelligence=70, speed=80, magic=50, stealth=30, luck=50, charm=70),
     ability="FLY",
-    parent1=air.id,
-    parent2=deer.id,
+    fusionId=str(air.id) + '-' + str(deer.id),
 )
 
 hydra = MonsterDatabase(
@@ -246,8 +226,7 @@ hydra = MonsterDatabase(
     description="A multi-headed serpent that regenerates heads when one is cut off",
     stats=Stats(health=100, defense=70, strength=100, intelligence=60, speed=50, magic=40, stealth=20, luck=50, charm=30),
     ability="HEAL",
-    parent1=dragon.id,
-    parent2=nymph.id,
+    fusionId=str(dragon.id) + '-' + str(nymph.id),
 )
 
 shadow_wraith = MonsterDatabase(
@@ -255,8 +234,7 @@ shadow_wraith = MonsterDatabase(
     description="A ghostly figure that moves silently and strikes from the shadows",
     stats=Stats(health=50, defense=30, strength=60, intelligence=80, speed=100, magic=90, stealth=100, luck=70, charm=40),
     ability="SHADOW",
-    parent1=nymph.id,
-    parent2=storm_spirit.id,
+    fusionId=str(nymph.id) + '-' + str(storm_spirit.id),
 )
 
 centaur = MonsterDatabase(
@@ -264,8 +242,7 @@ centaur = MonsterDatabase(
     description="A half-human, half-horse warrior skilled in archery and combat",
     stats=Stats(health=90, defense=70, strength=80, intelligence=60, speed=70, magic=30, stealth=40, luck=50, charm=60),
     ability="PRECISION",
-    parent1=deer.id,
-    parent2=griffin.id,
+    fusionId=str(deer.id) + '-' + str(griffin.id),
 )
 
 mermaid = MonsterDatabase(
@@ -273,8 +250,7 @@ mermaid = MonsterDatabase(
     description="A beautiful aquatic creature that can enchant sailors with its song",
     stats=Stats(health=60, defense=40, strength=30, intelligence=70, speed=50, magic=80, stealth=50, luck=60, charm=100),
     ability="SONG",
-    parent1=fish.id,
-    parent2=nymph.id,
+    fusionId=str(fish.id) + '-' + str(nymph.id),
 )
 
 minotaur = MonsterDatabase(
@@ -282,8 +258,7 @@ minotaur = MonsterDatabase(
     description="A fearsome beast with the body of a man and the head of a bull",
     stats=Stats(health=100, defense=90, strength=100, intelligence=40, speed=50, magic=20, stealth=30, luck=40, charm=20),
     ability="CHARGE",
-    parent1=centaur.id,
-    parent2=deer.id,
+    fusionId=str(centaur.id) + '-' + str(deer.id),
 )
 
 fairy = MonsterDatabase(
@@ -291,8 +266,7 @@ fairy = MonsterDatabase(
     description="A tiny magical creature that can cast powerful spells",
     stats=Stats(health=40, defense=20, strength=20, intelligence=90, speed=80, magic=100, stealth=70, luck=80, charm=90),
     ability="SPELLCAST",
-    parent1=nymph.id,
-    parent2=mermaid.id,
+    fusionId=str(nymph.id) + '-' + str(mermaid.id),
 )
 
 werewolf = MonsterDatabase(
@@ -300,8 +274,7 @@ werewolf = MonsterDatabase(
     description="A cursed human that transforms into a wolf under the full moon",
     stats=Stats(health=100, defense=60, strength=90, intelligence=50, speed=80, magic=40, stealth=60, luck=50, charm=40),
     ability="TRANSFORM",
-    parent1=minotaur.id,
-    parent2=shadow_wraith.id,
+    fusionId=str(minotaur.id) + '-' + str(shadow_wraith.id),
 )
 
 vampire = MonsterDatabase(
@@ -309,8 +282,7 @@ vampire = MonsterDatabase(
     description="An undead creature that feeds on the blood of the living",
     stats=Stats(health=80, defense=50, strength=70, intelligence=90, speed=70, magic=60, stealth=80, luck=60, charm=100),
     ability="DRAIN",
-    parent1=werewolf.id,
-    parent2=werewolf.id,
+    fusionId=str(werewolf.id) + '-' + str(werewolf.id),
 )
 
 kraken = MonsterDatabase(
@@ -318,8 +290,7 @@ kraken = MonsterDatabase(
     description="A massive sea monster with tentacles that can crush ships",
     stats=Stats(health=100, defense=100, strength=100, intelligence=50, speed=30, magic=40, stealth=20, luck=30, charm=10),
     ability="CRUSH",
-    parent1=fish.id,
-    parent2=fish.id, 
+    fusionId=str(fish.id) + '-' + str(fish.id),
 )
 
 djinn = MonsterDatabase(
@@ -327,8 +298,7 @@ djinn = MonsterDatabase(
     description="A mystical being that can grant wishes, but at a cost",
     stats=Stats(health=70, defense=40, strength=50, intelligence=100, speed=60, magic=100, stealth=50, luck=80, charm=90),
     ability="WISH",
-    parent1=magic.id,
-    parent2=magic.id,
+    fusionId=str(magic.id) + '-' + str(magic.id),
 )
 
 lich = MonsterDatabase(
@@ -336,8 +306,7 @@ lich = MonsterDatabase(
     description="A powerful undead sorcerer that commands dark magic",
     stats=Stats(health=90, defense=60, strength=50, intelligence=100, speed=40, magic=100, stealth=30, luck=50, charm=40),
     ability="NECROMANCY",
-    parent1=shadow_wraith.id,
-    parent2=shadow_wraith.id,
+    fusionId=str(shadow_wraith.id) + '-' + str(shadow_wraith.id),
 )
 
 chimera = MonsterDatabase(
@@ -345,8 +314,7 @@ chimera = MonsterDatabase(
     description="A monstrous creature with the heads of a lion, goat, and serpent",
     stats=Stats(health=100, defense=80, strength=100, intelligence=60, speed=70, magic=50, stealth=40, luck=50, charm=30),
     ability="MULTIATTACK",
-    parent1=griffin.id,
-    parent2=centaur.id,
+    fusionId=str(griffin.id) + '-' + str(centaur.id),
 )
 
 # Add the protocol to the URL

@@ -1,12 +1,6 @@
-import { orderBy, collection, query, where, getDocs, limit, documentId } from "firebase/firestore";
-import { firestore } from "@/app/firebaseConfig";
+import { firestore } from "@/app/api/firebaseServer";
 import { putMonster } from './monsters';
-import type { MonsterSimple, Monster } from '@/types/monster';
-
-function isValidSortField(sort: string | string[] | undefined): boolean {
-    const validSortFields = ['id', 'name', 'recency'];
-    return typeof sort === 'string' && validSortFields.includes(sort);
-}
+import type { Monster } from '@/types/monster';
 
 // GET /api/monsters
 export async function GET(req: Request) {
@@ -14,52 +8,38 @@ export async function GET(req: Request) {
         const url = new URL(req.url || '');
         const sort = url.searchParams.get('sort');
 
-        let monstersRef = collection(firestore, "monsters");
-        let monstersQuery;
+        let monsters = await firestore.collection("monsters").get();
 
-        if (sort && isValidSortField(sort)) {
-            if (sort === 'id') {
-                monstersQuery = query(monstersRef, orderBy('id'));
-            } else if (sort === 'name') {
-                monstersQuery = query(monstersRef, orderBy('name'));
-            } else if (sort === 'recency') {
-                monstersQuery = query(monstersRef, orderBy('createdAt', 'desc'));
-            }
-        }
+        if (monsters.empty) {
+            return new Response(JSON.stringify([]), { status: 200 });
+        } 
+        
+        let data = monsters.docs.map(doc => doc.data() as Monster);
 
+        // order by id
+        data.sort((a, b) => b.id - a.id);
 
-        if (!monstersQuery) {
-            monstersQuery = query(monstersRef, orderBy('createdAt', 'desc'));
-        }
-        monstersQuery = query(monstersQuery, limit(30));
-        const monstersSnapshot = await getDocs(monstersQuery);
-        const monsters = monstersSnapshot.docs.map(doc => {
-            const data = doc.data() as Monster;
-            return data as Monster;
-        })
-        console.log("Fetched monsters:", monsters);
-        return new Response(JSON.stringify(monsters), { status: 200 });
+        return new Response(JSON.stringify(data), { status: 200 });
     } catch (error) {
         console.error("Error fetching monsters:", error);
         return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
     }
 }
 
-// POST /api/monsters
-export async function POST(req: Request) {
-    try {
-        const monsterData: MonsterSimple = await req.json();
-        if (!monsterData || !monsterData.name || !monsterData.stats) {
-            console.error("Invalid monster data:", monsterData);
-            return new Response(JSON.stringify({ error: "Invalid monster data" }), { status: 400 });
-        }
-        const newMonster = await putMonster(monsterData);
-        return new Response(JSON.stringify(newMonster), { status: 201 });
-    } catch (error: any) {
-        console.error("Error creating monster:", error);
-        if (error.message === "Monster already exists") {
-            return new Response(JSON.stringify({ error: "Monster already exists" }), { status: 409 });
-        }
-        return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
-    }
-}
+// // POST /api/monsters
+// export async function POST(req: Request) {
+//     try {
+//         const monsterData: Monster = await req.json();
+//         if (!monsterData || !monsterData.name || !monsterData.stats || !monsterData.ability  || !monsterData.fusionId || !monsterData.level) {
+//             return new Response(JSON.stringify({ error: "Invalid monster data" }), { status: 400 });
+//         }
+//         const newMonster = await putMonster(monsterData, monsterData.owner, parseInt(monsterData.fusionId.split('-')[0]), parseInt(monsterData.fusionId.split('-')[1]), monsterData.level);
+//         return new Response(JSON.stringify(newMonster), { status: 201 });
+//     } catch (error: any) {
+//         console.error("Error creating monster:", error);
+//         if (error.message === "Monster already exists") {
+//             return new Response(JSON.stringify({ error: "Monster already exists" }), { status: 409 });
+//         }
+//         return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
+//     }
+// }

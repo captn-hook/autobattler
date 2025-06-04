@@ -16,6 +16,7 @@ export default function Index() {
                 const response = await fetch('/api/monsters');
                 if (!response.ok) {
                     console.warn('Failed to fetch monsters:', response.statusText);
+                    return;
                 }
                 const monsters = await response.json();
                 setData(monsters);

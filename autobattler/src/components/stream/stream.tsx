@@ -15,7 +15,7 @@ export default function Stream() {
             try {
                 const response = await fetch('/api/monsters');
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    return;
                 }
                 const monsters = await response.json();
                 setData(monsters);

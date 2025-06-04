@@ -216,7 +216,7 @@ def battle_monster(monster1: Monster, monster2: Monster):
     generator = ollama(BattleReport)
 
     result = generator(
-        "Generate a battle report between two monsters. Stats are between 1 and 100, with higher numbers indicating stronger attributes. Take the monsters' abilities into account along with their stats.\n"
+        "Choose a winner in a fight between these two monsters/ Stats are between 1 and 100, with higher numbers indicating stronger attributes. Take the monsters' abilities into account along with their stats.\n"
         f"Monster 1: {monster1}\n"
         f"Monster 2: {monster2}\n\n"
         "Describe the battle outcome, including any special abilities used by the final winner"
@@ -228,6 +228,8 @@ def battle_monster(monster1: Monster, monster2: Monster):
     elif result.victor == monster2.name:
         monster2.description = result.description + f"\n{monster2.name} wins the battle!"
         return monster2
+    else:
+        raise ValueError("Invalid battle report: victor not found in the provided monsters.")
 
 def new_monster():
 
@@ -261,31 +263,39 @@ app = Flask(__name__)
 @app.route('/fusion', methods=['POST'])
 def fusion():
     print("Received fusion request")
-    data = request.json
-    monster1 = Monster(**data['monster1'])
-    monster2 = Monster(**data['monster2'])
-    
-    new_monster = monster_fusion(monster1, monster2)
-    
-    # If the new monster has empty fields, return a 500 error
-    if new_monster.name == "" or new_monster.description == "" or not new_monster.stats:
-        print(new_monster)
-        print("Failed to generate a new monster with valid fields")
-        return jsonify({"error": "Failed to generate a new monster"}), 500
-    
-    print("New Monster:\n", new_monster)
-    return jsonify(new_monster.model_dump())
+    try:
+        data = request.json
+        monster1 = Monster(**data['monster1'])
+        monster2 = Monster(**data['monster2'])
+        
+        new_monster = monster_fusion(monster1, monster2)
+        
+        # If the new monster has empty fields, return a 500 error
+        if new_monster.name == "" or new_monster.description == "" or not new_monster.stats:
+            print(new_monster)
+            print("Failed to generate a new monster with valid fields")
+            return jsonify({"error": "Failed to generate a new monster"}), 500
+        
+        print("New Monster:\n", new_monster)
+        return jsonify(new_monster.model_dump())
+    except ValueError as e:
+        print("Error during fusion:", e)
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/battle', methods=['POST'])
 def battle():
     print("Received battle request")
-    data = request.json
-    monster1 = Monster(**data['monster1'])
-    monster2 = Monster(**data['monster2'])
+    try:
+        data = request.json
+        monster1 = Monster(**data['monster1'])
+        monster2 = Monster(**data['monster2'])
     
-    report = battle_monster(monster1, monster2)
-    print("Battle Report:\n", report)
-    return jsonify(report.model_dump())
+        report = battle_monster(monster1, monster2)
+        print("Battle Report:\n", report)
+        return jsonify(report.model_dump())
+    except ValueError as e:
+        print("Error during battle:", e)
+        return jsonify({"error": str(e)}), 500
 
 # @app.route('/monster', methods=['GET'])
 # def get_monster():

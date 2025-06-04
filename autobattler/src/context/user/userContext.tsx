@@ -15,7 +15,6 @@ interface UserContextValue {
   user: User | null;
   login: () => Promise<void>;
   logout: () => Promise<void>;
-  addFavorite: (monsterId: number) => void;
   getFavorites: () => Promise<number[]>; 
 }
 
@@ -57,28 +56,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       console.error("Error signing out", error);
     }
   }
-  
-  async function addFavorite(monsterId: number) {
-    if (!user) {
-      console.warn("User must be logged in to add favorites");
-      return;
-    }
-
-    const userDoc = doc(firestore, "users", user.id);
-    const userSnapshot = await getDoc(userDoc);
-
-    if (userSnapshot.exists()) {
-      const userData = userSnapshot.data();
-      const favorites = userData.favorites || [];
-      if (!favorites.includes(monsterId)) {
-        favorites.push(monsterId);
-        await setDoc(userDoc, { favorites }, { merge: true });
-      }
-    } else {
-      // If the user document doesn't exist, create it with the favorite
-      await setDoc(userDoc, { favorites: [monsterId] });
-    }
-  }
 
   async function getFavorites(): Promise<number[]> {
     if (!user) {
@@ -98,7 +75,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <UserContext.Provider value={{ user, login, logout, addFavorite, getFavorites }}>
+    <UserContext.Provider value={{ user, login, logout, getFavorites }}>
       {children}
     </UserContext.Provider>
   );
