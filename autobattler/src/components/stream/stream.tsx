@@ -1,31 +1,20 @@
 'use client';
-import { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import MonsterCard from '@/components/card/monsterCard';
-import { Monster } from '@/types/monster';
 import { useResult } from '@/context/result/resultContext';
+import { useMonsters } from '@/context/monsters/monsterContext';
 
 export default function Stream() {
-    const [data, setData] = useState<Monster[]>([]);
     const { result } = useResult();
-    
-    useEffect(() => {
-        // Fetch /api/monsters
-        async function fetchMonsters() {
-            try {
-                const response = await fetch('/api/monsters');
-                if (!response.ok) {
-                    return;
-                }
-                const monsters = await response.json();
-                setData(monsters);
-            } catch (error) {
-                console.error('Error fetching monsters:', error);
-            }
-        }
-        fetchMonsters();
-    }, [result]);
+    const { getMonsters } = useMonsters();
 
+    const monsters = getMonsters()
+
+
+    if (!monsters || monsters.length === 0) {
+        return <Box sx={{ width: '100%', height: '100%' }}>Loading...</Box>;
+    }
+    
     return (
         <Box sx={{ width: '100%', height: '100%' }}>
             <h2>Newest Monsters</h2>
@@ -47,7 +36,7 @@ export default function Stream() {
                     marginBottom: '16px',
                 }}
             >
-                {data.map((monster) => (
+                {monsters.map((monster) => (
                     <Box key={monster.id} sx={{ flexShrink: 0 }}>
                         <MonsterCard monster={monster} />
                     </Box>

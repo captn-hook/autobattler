@@ -14,10 +14,13 @@ const image_list = [
     'fly',
     'heal',
     'stun',
-    'water'
+    'water',
+    'divine',
+    'invisible',
+    'dog'
 ];
 
-export default function MonsterCard({ monster, size = 'medium' }: { monster: Monster; size?: 'small' | 'medium' | 'large' }) {
+export default function MonsterCard({ monster }: { monster: Monster }) {
     const { setMonster1, setMonster2 } = useSelection();
 
     if (monster.image === "") {
@@ -27,27 +30,28 @@ export default function MonsterCard({ monster, size = 'medium' }: { monster: Mon
             monster.image = '/placeholder.png'; // Fallback image if none provided
         }
     }
-
-    let sizeW;
-    switch (size) {
-        case 'small':
-            sizeW = 250;
-            break;
-        case 'medium':
-            sizeW = 300;
-            break;
-        case 'large':
-            sizeW = 400;
-            break;
-        default:
-            sizeW = 500; // Default to medium size
-    }
     
-    sizeW = 400;
+    let sizeW = '350px'; // Default size
+
+    function getColor(value: number): string {
+        // Linear interpolation for color based on value
+        // Red for low values, blue for high values
+        const min = 0;
+        const max = 100; 
+        const ratio = (value - min) / (max - min);
+        const r = Math.round(255 * (1 - ratio)); // Red decreases
+        const b = Math.round(255 * ratio); // Blue increases
+        return `rgb(${r}, 0, ${b})`; // Green is always 0
+    }
 
     return (
-        <Card sx={{ width: sizeW, margin: 0.5 }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
-            <Box sx={{ display: 'flex', alignItems: 'center',    borderBottom: '1px solid var(--color-secondary)' }}>
+        <Card sx={{
+            width: sizeW,
+            margin: 0.5,
+            fontSize: '0.5rem',
+            direction: 'ltr !important',
+        }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--color-secondary)' }}>
                 <CardMedia
                     component="img"
                     height="50"
@@ -65,8 +69,35 @@ export default function MonsterCard({ monster, size = 'medium' }: { monster: Mon
                 </Box>
             </Box>
             <CardContent sx={{ padding: '8px' }}>
-                <Box sx={{ maxHeight: '120px', overflowY: 'auto' }}>
-                    <p>{monster.description}</p>
+                <Box sx={{
+                    height: '20vh',
+                    overflowY: 'auto',
+                    direction: 'ltr',
+                    '&::-webkit-scrollbar-thumb': {
+                        borderRadius: '10px',
+                        backgroundColor: 'var(--color-text)',
+                    },
+                    '&::-webkit-scrollbar': {
+                        width: '3px',
+                    },
+                    marginBottom: '8px',
+                }}>
+                    <Typography sx={{
+                        textAlign: 'left',
+                        color: 'var(--color-text)',
+                        whiteSpace: 'pre-wrap',
+                        fontSize: '0.9rem',
+                        lineHeight: '1.1rem',
+                    }}
+                    >{monster.description}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTop: 'thin solid var(--color-secondary)', paddingTop: '4px' }}>
+                    <Typography variant="subtitle2" sx={{ color: 'var(--color-text)', marginBottom: '4px' }}>
+                        Level: {monster.level}
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{ color: 'var(--color-text)', marginBottom: '4px' }}>
+                        Parent Monsters: <a href={`/monster/${monster.fusionId.split('-')[0]}`}>{monster.fusionId.split('-')[0]}</a> / <a href={`/monster/${monster.fusionId.split('-')[1]}`}>{monster.fusionId.split('-')[1]}</a>
+                    </Typography>
                 </Box>
                 <List
                     dense
@@ -83,13 +114,22 @@ export default function MonsterCard({ monster, size = 'medium' }: { monster: Mon
                                 justifyContent: 'space-between',
                                 paddingY: '1px',
                                 paddingX: 0,
+                                margin: 0,
                                 minHeight: 0,
+                                '&::before': {
+                                    content: '""',
+                                    position: 'absolute',
+                                    width: '100%',
+                                    top: '0rem',
+                                    borderBottom: 'thin solid var(--color-secondary)',
+                                    backgroundColor: 'var(--color-secondary)',
+                                }
                             }}
                         >
-                            <Typography sx={{ textAlign: 'left', color: 'var(--color-text)' }}>
+                            <Typography sx={{ textAlign: 'left', color: 'var(--color-text)', fontSize: '0.8rem' }}>
                                 {key.charAt(0).toUpperCase() + key.slice(1)}
                             </Typography>
-                            <Typography sx={{ textAlign: 'right', color: 'var(--color-text)' }}>
+                            <Typography sx={{ textAlign: 'right', color: getColor(value), fontWeight: 'bold', fontSize: '0.8rem' }}>
                                 {value.toString()}
                             </Typography>
                         </ListItem>

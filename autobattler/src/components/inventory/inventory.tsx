@@ -4,6 +4,7 @@ import { Monster } from '@/types/monster';
 import { Grid, Box } from '@mui/material';
 import { useResult } from '@/context/result/resultContext';
 import { useUser } from '@/context/user/userContext';
+import { useMonsters } from '@/context/monsters/monsterContext';
 import MonsterCard from '@/components/card/monsterCard';
 
 export default function Inventory() {
@@ -11,6 +12,7 @@ export default function Inventory() {
     const { result } = useResult();
     const { user, getFavorites } = useUser();
     
+    const { getMonster } = useMonsters();
     useEffect(() => {
         // Fetch /api/monsters?filter=uuid
         async function fetchMonsters() {
@@ -22,13 +24,10 @@ export default function Inventory() {
                 const response = await getFavorites();
                 var monsters: Monster[] = [];
                 for (const monsterId of response) {
-                    const monsterResponse = await fetch(`/api/monsters/${monsterId}`);
-                    if (!monsterResponse.ok) {
-                        console.warn('Failed to fetch monster:', monsterResponse.statusText);
-                        continue;
+                    const monster = await getMonster(monsterId);
+                    if (monster) {
+                        monsters.push(monster);
                     }
-                    const monster = await monsterResponse.json();
-                    monsters.push(monster);
                 }
                 setData(monsters);
             } catch (error) {

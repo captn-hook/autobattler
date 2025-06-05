@@ -19,13 +19,15 @@ export async function GET(req: Request) {
         // order by id
         data.sort((a, b) => b.id - a.id);
 
-        return new Response(JSON.stringify(data), { status: 200 });
+        // get the 30 most recent
+        const recentMonsters = data.slice(0, 30);
+
+        return new Response(JSON.stringify(recentMonsters), { status: 200 });
     } catch (error) {
         console.error("Error fetching monsters:", error);
         return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 });
     }
 }
-
 // // POST /api/monsters
 // export async function POST(req: Request) {
 //     try {

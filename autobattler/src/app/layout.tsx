@@ -6,6 +6,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { UserProvider } from "@/context/user/userContext";
 import { SelectionProvider } from "@/context/selection/selectionContext";
 import { ResultProvider } from "@/context/result/resultContext";
+import { MonsterProvider } from "@/context/monsters/monsterContext";
 import ResultPopup from "@/components/result/restultPopup";
 
 const geistSans = Geist({
@@ -33,13 +34,15 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppRouterCacheProvider>
           <UserProvider>
-            <SelectionProvider>
-              <ResultProvider>
-                <Nav />
-                <ResultPopup />
-                {children}
-              </ResultProvider>
-            </SelectionProvider>
+            <MonsterProvider>
+              <SelectionProvider>
+                <ResultProvider>
+                  <Nav />
+                  <ResultPopup />
+                  {children}
+                </ResultProvider>
+              </SelectionProvider>
+            </MonsterProvider>
           </UserProvider>
         </AppRouterCacheProvider>
       </body>

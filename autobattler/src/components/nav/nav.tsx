@@ -117,6 +117,16 @@ export default function Nav() {
                             </Button>
                         </Box>
                     )}
+                    {selection.monster1 && selection.monster2 && !user && (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '0 8px' }}>
+                            <Typography variant="subtitle1" sx={{ color: 'var(--color-text)' }}>
+                                Login to battle
+                            </Typography>
+                            <Typography variant="subtitle1" sx={{ color: 'var(--color-text)' }}>
+                                or fuse monsters
+                            </Typography>
+                        </Box>
+                    )}
                     {selection.monster2 && (
                         <>
                             <Image
