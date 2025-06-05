@@ -43,7 +43,7 @@ export default function ResultPopup({ ttl = 3.2 }) {
             onClick={() => setVisible(false)}
         >
             <h2 style={{ color: 'white', marginBottom: '8px' }}>Battle Result</h2>
-            <MonsterCard monster={result} size="large" />
+            <MonsterCard monster={result}/>
         </Box>
     );
 }
