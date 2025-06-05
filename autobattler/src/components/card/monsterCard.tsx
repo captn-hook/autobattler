@@ -18,7 +18,11 @@ const image_list = [
     'divine',
     'invisible',
     'dog',
-    'blind'
+    'blind',
+    'charm',
+    'wrath',
+    'camouflage',
+    'shield'
 ];
 
 export default function MonsterCard({ monster }: { monster: Monster }) {
