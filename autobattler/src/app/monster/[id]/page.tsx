@@ -5,12 +5,12 @@ import { useMonsters } from '@/context/monsters/monsterContext';
 import MonsterCard from '@/components/card/monsterCard';
 import { Box } from '@mui/material';
 
-export default function Page() {
+export default async function Page() {
     const params = useParams();
     const id = params?.id as string;
 
     const { getMonster } = useMonsters();
-    const monster = getMonster(parseInt(id));
+    const monster = await getMonster(parseInt(id));
 
     if (!id || !monster) {
         return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Loading...</Box>;

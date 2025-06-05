@@ -1,6 +1,6 @@
 'use client';
 import { Card, CardContent, Typography, CardMedia } from '@mui/material';
-import { List, ListItem, Box } from '@mui/material';
+import { List, ListItem, Box, useMediaQuery } from '@mui/material';
 import { useSelection } from '@/context/selection/selectionContext';
 import { Monster } from '@/types/monster';
 import { Stats } from '@/types/stats';
@@ -17,11 +17,30 @@ const image_list = [
     'water',
     'divine',
     'invisible',
-    'dog'
+    'dog',
+    'blind'
 ];
 
 export default function MonsterCard({ monster }: { monster: Monster }) {
     const { setMonster1, setMonster2 } = useSelection();
+
+        const isSmallScreen = useMediaQuery('(max-width:600px)');
+        const isMediumScreen = useMediaQuery('(max-width:100px)');
+        let sizeW = '350px'; 
+        let fontS = '0.5rem'; 
+        let fontL = '0.8rem';
+    
+        if (isSmallScreen) {
+            console.log('Small screen detected');
+            sizeW = '180px'; 
+            fontS = '0.4rem'; 
+            fontL = '0.6rem';
+        } else if (isMediumScreen) {
+            console.log('Medium screen detected');
+            sizeW = '230px'; 
+            fontS = '0.45rem'; 
+            fontL = '0.7rem'; 
+        }
 
     if (monster.image === "") {
         if (image_list.includes(monster.ability.toLowerCase())) {
@@ -31,7 +50,6 @@ export default function MonsterCard({ monster }: { monster: Monster }) {
         }
     }
     
-    let sizeW = '350px'; // Default size
 
     function getColor(value: number): string {
         // Linear interpolation for color based on value
@@ -48,7 +66,7 @@ export default function MonsterCard({ monster }: { monster: Monster }) {
         <Card sx={{
             width: sizeW,
             margin: 0.5,
-            fontSize: '0.5rem',
+            fontSize: fontS,
             direction: 'ltr !important',
         }} onClick={() => { setMonster1(monster); }} onContextMenu={(e) => { e.preventDefault(); setMonster2(monster); }}>
             <Box sx={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid var(--color-secondary)' }}>
@@ -86,7 +104,7 @@ export default function MonsterCard({ monster }: { monster: Monster }) {
                         textAlign: 'left',
                         color: 'var(--color-text)',
                         whiteSpace: 'pre-wrap',
-                        fontSize: '0.9rem',
+                        fontSize: fontL,
                         lineHeight: '1.1rem',
                     }}
                     >{monster.description}</Typography>
@@ -126,10 +144,10 @@ export default function MonsterCard({ monster }: { monster: Monster }) {
                                 }
                             }}
                         >
-                            <Typography sx={{ textAlign: 'left', color: 'var(--color-text)', fontSize: '0.8rem' }}>
+                            <Typography sx={{ textAlign: 'left', color: 'var(--color-text)', fontSize: fontL }}>
                                 {key.charAt(0).toUpperCase() + key.slice(1)}
                             </Typography>
-                            <Typography sx={{ textAlign: 'right', color: getColor(value), fontWeight: 'bold', fontSize: '0.8rem' }}>
+                            <Typography sx={{ textAlign: 'right', color: getColor(value), fontWeight: 'bold', fontSize: fontL }}>
                                 {value.toString()}
                             </Typography>
                         </ListItem>
