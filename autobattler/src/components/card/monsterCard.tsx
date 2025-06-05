@@ -5,6 +5,8 @@ import { useSelection } from '@/context/selection/selectionContext';
 import { Monster } from '@/types/monster';
 import { Stats } from '@/types/stats';
 
+import Link from 'next/link';
+
 const image_list = [
     'air',
     'earth',
@@ -118,7 +120,7 @@ export default function MonsterCard({ monster }: { monster: Monster }) {
                         Level: {monster.level}
                     </Typography>
                     <Typography variant="subtitle2" sx={{ color: 'var(--color-text)', marginBottom: '4px' }}>
-                        Parent Monsters: <a href={`/monster/${monster.fusionId.split('-')[0]}`}>{monster.fusionId.split('-')[0]}</a> / <a href={`/monster/${monster.fusionId.split('-')[1]}`}>{monster.fusionId.split('-')[1]}</a>
+                        Parent Monsters: <Link href={`/monster/${monster.fusionId.split('-')[0]}`}>{monster.fusionId.split('-')[0]}</Link> / <Link href={`/monster/${monster.fusionId.split('-')[1]}`}>{monster.fusionId.split('-')[1]}</Link>
                     </Typography>
                 </Box>
                 <List

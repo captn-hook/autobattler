@@ -7,6 +7,7 @@ import { useUser } from '@/context/user/userContext';
 import { useSelection } from '@/context/selection/selectionContext';
 import { useResult } from '@/context/result/resultContext';
 import { auth } from '@/app/firebaseConfig';
+import Link from 'next/link';
 
 export default function Nav() {
     const { user, login, logout } = useUser();
@@ -49,7 +50,9 @@ export default function Nav() {
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
                     <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                        Autobattler
+                        <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            Autobattler
+                        </Link>
                     </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>

@@ -19,6 +19,7 @@ export const MonsterProvider = ({ children }: { children: ReactNode }) => {
     // Fetch initial monsters data from /api/monsters
     const fetchMonsters = async () => {
       try {
+        console.log('Fetching monsters from /api/monsters');
         const response = await fetch('/api/monsters');
         if (!response.ok) {
           throw new Error('Failed to fetch monsters');
@@ -53,7 +54,8 @@ export const MonsterProvider = ({ children }: { children: ReactNode }) => {
         }
         const monster: Monster = await response.json();
         setMonster(monster);
-        return monster;
+        console.log('Fetched monster:', monster);
+        return monster as Monster;
       } catch (error) {
         console.error('Error fetching monster:', error);
         return undefined;
